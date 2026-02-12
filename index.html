@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thắng Trần AI - Karaoke Pro System</title>
+    <title>🎤 THẮNG TRẦN KARAOKE AI</title>
     <style>
         body { background: #000; color: #fff; font-family: 'Segoe UI', Arial; text-align: center; padding: 20px; margin: 0; }
         .control-panel { background: #111; padding: 20px; border-bottom: 3px solid #ff0000; position: sticky; top: 0; z-index: 100; }
@@ -18,9 +18,9 @@
 </head>
 <body>
     <div class="control-panel">
-        <h1>🎤 THẮNG TRẦN AI KARAOKE GLOBAL</h1>
+        <h1>🎤 THẮNG TRẦN KARAOKE AI</h1>
         <div class="search-container">
-            <input type="text" id="inputField" placeholder="Nói hoặc nhập tên bài hát / Dán link YouTube...">
+            <input type="text" id="inputField" placeholder="Nói hoặc nhập bài hát...">
             <button id="micBtn" class="btn-mic">🎤</button>
             <button class="btn-play" onclick="executeSearch()">HÁT</button>
         </div>
@@ -30,7 +30,7 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const API_KEY = 'AIzaSyBChYUV6QDpytk9YjkBpuoarmc824ONOAE';
+        const API_KEY = 'AIzaSyCaZnEK1Ds7i3hGIIomN2gLs961nCXW91M'; // Khóa mới của Sếp
         var player;
 
         function onYouTubeIframeAPIReady() {
@@ -43,43 +43,20 @@
         async function executeSearch() {
             var input = document.getElementById('inputField').value;
             if (!input) return;
-            document.getElementById('status').innerText = "AI đang tìm kiếm cho Sếp...";
-            
-            // 1. Kiểm tra nếu là link trực tiếp
-            var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            var match = input.match(regExp);
-            if (match && match[2].length == 11) {
-                player.loadVideoById(match[2]);
-                document.getElementById('status').innerText = "Đang phát theo ID: " + match[2];
-                return;
-            }
-
-            // 2. Tìm kiếm bằng API
+            document.getElementById('status').innerText = "AI đang tìm bài hát cho Sếp...";
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(input)}&type=video&key=${API_KEY}`;
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                
-                if (data.error) {
-                    document.getElementById('status').innerText = "Lỗi Google: " + data.error.message;
-                    return;
-                }
-
                 if (data.items && data.items.length > 0) {
                     player.loadVideoById(data.items[0].id.videoId);
                     document.getElementById('status').innerText = "Đã tìm thấy: " + data.items[0].snippet.title;
                 } else {
-                    document.getElementById('status').innerText = "Không tìm thấy kết quả phù hợp.";
+                    document.getElementById('status').innerText = "Không tìm thấy bài hát.";
                 }
-            } catch (e) {
-                document.getElementById('status').innerText = "Lỗi kết nối mạng. Sếp kiểm tra Wifi nhé!";
-            }
+            } catch (e) { document.getElementById('status').innerText = "Lỗi kết nối."; }
         }
 
-        // Xử lý phím Enter
-        document.getElementById('inputField').addEventListener('keypress', (e) => { if (e.key === 'Enter') executeSearch(); });
-
-        // Xử lý giọng nói
         const micBtn = document.getElementById('micBtn');
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'vi-VN';
@@ -90,17 +67,13 @@
         };
         recognition.onend = () => { micBtn.classList.remove('active'); };
 
-        // CHẶN THOÁT LY YOUTUBE KHI CLICK HÌNH
+        // CHẶN THOÁT LY SANG YOUTUBE
         document.addEventListener('click', function(e) {
             let link = e.target.closest('a');
             if (link && link.href.includes('youtube.com/watch')) {
                 e.preventDefault();
                 let videoId = new URL(link.href).searchParams.get('v');
-                if (videoId) {
-                    player.loadVideoById(videoId);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    document.getElementById('status').innerText = "Đang phát bài Sếp vừa chọn!";
-                }
+                if (videoId) { player.loadVideoById(videoId); window.scrollTo(0,0); }
             }
         });
     </script>
