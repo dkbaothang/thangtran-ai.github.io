@@ -31,99 +31,57 @@
     <div id="player-box"><div id="player"></div></div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
-   const API_KEY = 'AIzaSyBChYUV6QDpytk9YjkBpuoarmc824ONOAE';
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '600', width: '100%', videoId: 'vs_Ji3xfkzI', // Bài mặc định: Nhớ Quê Xưa
-                playerVars: { 'autoplay': 1, 'rel': 0, 'origin': window.location.origin, 'enablejsapi': 1 }
-            });
-        }
+<script>
+const API_KEY = 'AIzaSyBChYUV6QDpytk9YjkBpuoarmc824ONOAE';
+var player;
 
-        // XỬ LÝ NHẬP VĂN BẢN (ENTER ĐỂ HÁT)
-        document.getElementById('inputField').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') { executeSearch(); }
-        });
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: '600', width: '100%', videoId: 'vs_Ji3xfkzI',
+        playerVars: { 'autoplay': 1, 'origin': window.location.origin, 'enablejsapi': 1 }
+    });
+}
 
-       async function executeSearch() {
+async function executeSearch() {
     var input = document.getElementById('inputField').value;
     if (!input) return;
-
     var vid = extractVideoID(input);
     if (vid) {
         player.loadVideoById(vid);
         document.getElementById('status').innerText = "Đang phát video ID: " + vid;
     } else {
-        document.getElementById('status').innerText = "AI đang tìm kiếm bài hát chuẩn cho Sếp...";
+        document.getElementById('status').innerText = "AI đang tìm kiếm bài hát cho Sếp...";
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(input)}&type=video&key=${API_KEY}`;
         try {
             const response = await fetch(url);
             const data = await response.json();
             if (data.items && data.items.length > 0) {
-                const foundVid = data.items[0].id.videoId;
-                player.loadVideoById(foundVid);
+                player.loadVideoById(data.items[0].id.videoId);
                 document.getElementById('status').innerText = "Đã tìm thấy: " + data.items[0].snippet.title;
             } else {
-                document.getElementById('status').innerText = "Không tìm thấy kết quả phù hợp trên YouTube.";
+                document.getElementById('status').innerText = "Không tìm thấy kết quả.";
             }
         } catch (error) {
-            document.getElementById('status').innerText = "Lỗi kết nối API. Sếp kiểm tra lại chìa khóa nhé!";
+            document.getElementById('status').innerText = "Lỗi kết nối API.";
         }
     }
 }
-            var input = document.getElementById('inputField').value;
-            if (!input) return;
-            var vid = extractVideoId(input);
-            if (vid) { 
-                player.loadVideoById(vid); 
-                document.getElementById('status').innerText = "Đang phát video ID: " + vid;
-            } else {
-                // Nếu không phải link, ta có thể dùng từ khóa để tìm qua API (Phần này cần API Key nâng cao)
-                document.getElementById('status').innerText = "Vui lòng dán ID hoặc Link chuẩn để tránh lỗi 153";
-            }
-        }
 
-        function extractVideoId(url) {
-            var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            var match = url.match(regExp);
-            return (match && match[2].length == 11) ? match[2] : url;
-        }
+function extractVideoID(url) {
+    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match = url.match(regExp);
+    return (match && match[2].length == 11) ? match[2] : null;
+}
 
-        // XỬ LÝ GIỌNG NÓI SIÊU NHẠY
-        const micBtn = document.getElementById('micBtn');
-        const inputField = document.getElementById('inputField');
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'vi-VN';
-            recognition.interimResults = true; // HIỆN CHỮ NGAY KHI ĐANG NÓI (TĂNG ĐỘ NHẠY)
-
-            micBtn.onclick = () => {
-                recognition.start();
-                micBtn.classList.add('active');
-                document.getElementById('status').innerText = "AI đang lắng nghe Sếp...";
-            };
-
-            recognition.onresult = (event) => {
-                const transcript = Array.from(event.results)
-                    .map(result => result[0])
-                    .map(result => result.transcript)
-                    .join('');
-                inputField.value = transcript; // Đổ chữ vào thanh tìm kiếm
-            };
-
-            recognition.onend = () => {
-                micBtn.classList.remove('active');
-                document.getElementById('status').innerText = "Đã nhận lệnh! Nhấn HÁT để bắt đầu.";
-            };
-        } else {
-            alert("Trình duyệt không hỗ trợ AI giọng nói. Sếp hãy dùng Chrome!");
-        }
-    </script>
+const micBtn = document.getElementById('micBtn');
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = 'vi-VN';
+recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('inputField').value = transcript;
+    executeSearch();
+};
+micBtn.onclick = () => { recognition.start(); };
+</script>
 </body>
-
 </html>
-
-
