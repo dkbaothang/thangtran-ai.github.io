@@ -1,5 +1,4 @@
-# 🎤 THẮNG TRẦN AI KARAOKE SYSTEM 🚀
-
+# 🎤 THẮNG TRẦN KARAOKE AI  🚀 
 ## 🌟 GIỚI THIỆU (INTRODUCTION)
 Chào mừng Sếp Thắng Trần và cộng đồng người Việt yêu AI! Đây là hệ thống Karaoke cá nhân được thiết lập để vượt qua mọi rào cản về thời gian đồng bộ dữ liệu của các ứng dụng truyền thống. 
 
