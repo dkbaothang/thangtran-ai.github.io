@@ -20,7 +20,7 @@
     <div class="control-panel">
         <h1>🎤 THẮNG TRẦN KARAOKE AI</h1>
         <div class="search-container">
-            <input type="text" id="inputField" placeholder="Nói hoặc nhập bài hát cho Sếp Thắng Trần...">
+            <input type="text" id="inputField" placeholder="Sếp muốn hát bài gì ạ?...">
             <button id="micBtn" class="btn-mic">🎤</button>
             <button class="btn-play" onclick="executeSearch()">HÁT</button>
         </div>
@@ -30,7 +30,8 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const API_KEY = 'AIzaSyCaZnEK1Ds7i3hGIIomN2gLs961nCXW91M'; // Khóa mới của Sếp
+        // CHIẾC CHÌA KHÓA VÀNG CHÍNH XÁC TỪ ẢNH CỦA SẾP
+        const API_KEY = 'AIzaSyCaZnEK1Ds7i3hGIIomN2gLs961nCXW91M'; 
         var player;
 
         function onYouTubeIframeAPIReady() {
@@ -54,7 +55,7 @@
                 } else if (data.error) {
                     document.getElementById('status').innerText = "Google báo lỗi: " + data.error.message;
                 } else {
-                    document.getElementById('status').innerText = "Không tìm thấy bài hát. Sếp thử bài khác nhé!";
+                    document.getElementById('status').innerText = "Không tìm thấy bài hát.";
                 }
             } catch (e) { document.getElementById('status').innerText = "Lỗi kết nối API."; }
         }
@@ -70,16 +71,6 @@
             executeSearch();
         };
         recognition.onend = () => { micBtn.classList.remove('active'); };
-
-        // CHẶN THOÁT LY YOUTUBE
-        document.addEventListener('click', function(e) {
-            let link = e.target.closest('a');
-            if (link && link.href.includes('youtube.com/watch')) {
-                e.preventDefault();
-                let videoId = new URL(link.href).searchParams.get('v');
-                if (videoId) { player.loadVideoById(videoId); window.scrollTo(0,0); }
-            }
-        });
     </script>
 </body>
 </html>
