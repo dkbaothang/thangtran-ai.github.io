@@ -9,7 +9,7 @@
         .search-container { display: flex; max-width: 800px; margin: 0 auto; gap: 10px; }
         input { flex: 1; padding: 15px; border-radius: 30px; border: 2px solid #333; background: #1a1a1a; color: #fff; font-size: 16px; outline: none; }
         button { padding: 10px 25px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; background: #f00; color: #fff; }
-        #player-box { margin: 20px auto; max-width: 900px; aspect-ratio: 16/9; background: #000; border-radius: 15px; overflow: hidden; box-shadow: 0 0 40px rgba(255,0,0,0.3); }
+        #player-box { margin: 20px auto; max-width: 950px; aspect-ratio: 16/9; background: #000; border-radius: 20px; overflow: hidden; box-shadow: 0 0 50px rgba(255,0,0,0.3); }
         #status { color: #f44; font-size: 14px; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
@@ -27,7 +27,8 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const API_KEY = 'AIzaSyCaZnEK1Ds7i3hGIIomN2gLs961nCXW91M'; //
+        // CHÌA KHÓA VÀNG CHÍNH XÁC TỪ ẢNH CỦA SẾP
+        const API_KEY = 'AIzaSyCaZnEK1Ds7i3hGIIomN2gLs961nCXW91M'; 
         var player;
 
         function onYouTubeIframeAPIReady() {
@@ -42,7 +43,7 @@
             if (!input) return;
             document.getElementById('status').innerText = "🔍 AI đang tìm bài hát chuẩn cho Sếp...";
             
-            // DÒNG MÃ QUYẾT ĐỊNH: SỬ DỤNG DẤU HUYỀN ` ĐỂ TRUYỀN BIẾN API_KEY
+            // DÒNG MÃ QUYẾT ĐỊNH: SỬ DỤNG DẤU HUYỀN ` ĐỂ GIẢI PHÓNG API_KEY
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(input + ' karaoke')}&type=video&key=${API_KEY}`;
             
             try {
@@ -56,7 +57,7 @@
                 } else {
                     document.getElementById('status').innerText = "⚠️ Không tìm thấy bài hát.";
                 }
-            } catch (e) { document.getElementById('status').innerText = "❌ Lỗi kết nối API."; }
+            } catch (e) { document.getElementById('status').innerText = "❌ Lỗi mạng."; }
         }
 
         const micBtn = document.getElementById('micBtn');
