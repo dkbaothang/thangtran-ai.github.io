@@ -46,7 +46,32 @@
             if (e.key === 'Enter') { executeSearch(); }
         });
 
-        function executeSearch() {
+       async function executeSearch() {
+    var input = document.getElementById('inputField').value;
+    if (!input) return;
+
+    var vid = extractVideoID(input);
+    if (vid) {
+        player.loadVideoById(vid);
+        document.getElementById('status').innerText = "Đang phát video ID: " + vid;
+    } else {
+        document.getElementById('status').innerText = "AI đang tìm kiếm bài hát chuẩn cho Sếp...";
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(input)}&type=video&key=${API_KEY}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.items && data.items.length > 0) {
+                const foundVid = data.items[0].id.videoId;
+                player.loadVideoById(foundVid);
+                document.getElementById('status').innerText = "Đã tìm thấy: " + data.items[0].snippet.title;
+            } else {
+                document.getElementById('status').innerText = "Không tìm thấy kết quả phù hợp trên YouTube.";
+            }
+        } catch (error) {
+            document.getElementById('status').innerText = "Lỗi kết nối API. Sếp kiểm tra lại chìa khóa nhé!";
+        }
+    }
+}
             var input = document.getElementById('inputField').value;
             if (!input) return;
             var vid = extractVideoId(input);
@@ -100,4 +125,5 @@
 </body>
 
 </html>
+
 
