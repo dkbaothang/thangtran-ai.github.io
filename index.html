@@ -42,7 +42,7 @@
             if (!input) return;
             document.getElementById('status').innerText = "🔍 AI đang tìm bài hát chuẩn cho Sếp...";
             
-            // DÒNG MÃ QUYẾT ĐỊNH (SỬ DỤNG DẤU HUYỀN ` )
+            // DÒNG MÃ QUYẾT ĐỊNH: SỬ DỤNG DẤU HUYỀN ` ĐỂ TRUYỀN BIẾN API_KEY
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(input + ' karaoke')}&type=video&key=${API_KEY}`;
             
             try {
@@ -67,16 +67,6 @@
             document.getElementById('inputField').value = event.results[0][0].transcript;
             executeSearch();
         };
-
-        // CHẶN THOÁT LY YOUTUBE (QUAN TRỌNG)
-        document.addEventListener('click', function(e) {
-            let link = e.target.closest('a');
-            if (link && link.href.includes('youtube.com/watch')) {
-                e.preventDefault();
-                let videoId = new URL(link.href).searchParams.get('v');
-                if (videoId) { player.loadVideoById(videoId); window.scrollTo(0,0); }
-            }
-        });
     </script>
 </body>
 </html>
