@@ -2,74 +2,107 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎤 THẮNG TRẦN KARAOKE AI</title>
     <style>
-        body { background: #000; color: #fff; font-family: 'Segoe UI', Arial; text-align: center; padding: 20px; margin: 0; }
-        .control-panel { background: #111; padding: 20px; border-bottom: 3px solid #ff0000; position: sticky; top: 0; z-index: 100; }
-        .search-container { display: flex; max-width: 800px; margin: 0 auto; gap: 10px; }
-        input { flex: 1; padding: 15px; border-radius: 30px; border: 2px solid #444; background: #222; color: #fff; font-size: 16px; outline: none; }
-        button { padding: 10px 25px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
-        .btn-mic { background: #444; color: #fff; }
-        .btn-mic.active { background: #ff0000; box-shadow: 0 0 15px #ff0000; }
-        .btn-play { background: #ff0000; color: #fff; }
-        #player-box { margin: 20px auto; max-width: 900px; border-radius: 20px; overflow: hidden; box-shadow: 0 0 40px rgba(255,0,0,0.3); }
-        #status { color: #888; font-size: 14px; margin-top: 10px; }
+        body { background: #050505; color: #f0f0f0; font-family: 'Segoe UI', Roboto, sans-serif; text-align: center; margin: 0; padding: 0; }
+        header { background: linear-gradient(180deg, #111 0%, #000 100%); padding: 30px; border-bottom: 2px solid #ff0000; box-shadow: 0 5px 20px rgba(255,0,0,0.2); }
+        h1 { margin: 0; font-size: 2.5em; letter-spacing: 2px; text-shadow: 2px 2px 10px rgba(255,0,0,0.5); }
+        .search-area { margin: 30px auto; max-width: 800px; display: flex; gap: 15px; padding: 0 20px; }
+        input { flex: 1; padding: 18px; border-radius: 40px; border: 2px solid #333; background: #1a1a1a; color: #fff; font-size: 18px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+        button { padding: 15px 35px; border-radius: 40px; border: none; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.4s; }
+        .btn-mic { background: #333; color: #fff; }
+        .btn-mic.active { background: #ff0000; animation: pulse 1.5s infinite; }
+        .btn-play { background: #ff0000; color: #fff; text-transform: uppercase; }
+        .btn-play:hover { transform: scale(1.05); background: #cc0000; }
+        #player-wrapper { margin: 20px auto; max-width: 1000px; border-radius: 15px; overflow: hidden; background: #000; aspect-ratio: 16/9; }
+        #status-bar { color: #ff4444; font-weight: 500; margin: 15px 0; min-height: 24px; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,0,0,0.7); } 70% { box-shadow: 0 0 0 15px rgba(255,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,0,0); } }
     </style>
 </head>
 <body>
-    <div class="control-panel">
+    <header>
         <h1>🎤 THẮNG TRẦN KARAOKE AI</h1>
-        <div class="search-container">
-            <input type="text" id="inputField" placeholder="Sếp muốn hát bài gì ạ?...">
-            <button id="micBtn" class="btn-mic">🎤</button>
-            <button class="btn-play" onclick="executeSearch()">HÁT</button>
-        </div>
-        <div id="status">Sẵn sàng phục vụ Sếp Thắng Trần!</div>
+        <p style="color: #666; margin-top: 5px;">Sứ mệnh phổ cập AI cho 2 triệu người Việt</p>
+    </header>
+
+    <div class="search-area">
+        <input type="text" id="inputField" placeholder="Sếp muốn hát bài gì ạ?...">
+        <button id="micBtn" class="btn-mic">🎤</button>
+        <button class="btn-play" onclick="executeSearch()">HÁT</button>
     </div>
-    <div id="player-box"><div id="player"></div></div>
+
+    <div id="status-bar">Hệ thống sẵn sàng phục vụ Sếp Thắng Trần!</div>
+    
+    <div id="player-wrapper">
+        <div id="player"></div>
+    </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // CHIẾC CHÌA KHÓA VÀNG CHÍNH XÁC TỪ ẢNH CỦA SẾP
+        // MÃ KHÓA CHUẨN XÁC TỪ ẢNH CỦA SẾP
         const API_KEY = 'AIzaSyCaZnEK1Ds7i3hGIIomN2gLs961nCXW91M'; 
         var player;
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '600', width: '100%', videoId: 'vs_Ji3xfkzI',
-                playerVars: { 'autoplay': 1, 'origin': window.location.origin, 'enablejsapi': 1 }
+                height: '100%', width: '100%', videoId: 'vs_Ji3xfkzI',
+                playerVars: { 'autoplay': 1, 'origin': window.location.origin, 'enablejsapi': 1, 'rel': 0 }
             });
         }
 
         async function executeSearch() {
-            var input = document.getElementById('inputField').value;
+            const input = document.getElementById('inputField').value.trim();
             if (!input) return;
-            document.getElementById('status').innerText = "AI đang tìm kiếm bài hát chuẩn cho Sếp...";
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(input)}&type=video&key=${API_KEY}`;
+            
+            const status = document.getElementById('status-bar');
+            status.innerText = "🔍 AI Đang tìm kiếm tinh hoa âm nhạc cho Sếp...";
+
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${encodeURIComponent(input + ' karaoke')}&type=video&key=${API_KEY}`;
+            
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                if (data.items && data.items.length > 0) {
-                    player.loadVideoById(data.items[0].id.videoId);
-                    document.getElementById('status').innerText = "Đã tìm thấy: " + data.items[0].snippet.title;
-                } else if (data.error) {
-                    document.getElementById('status').innerText = "Google báo lỗi: " + data.error.message;
-                } else {
-                    document.getElementById('status').innerText = "Không tìm thấy bài hát.";
+                
+                if (data.error) {
+                    status.innerText = "❌ Lỗi hệ thống: " + data.error.message;
+                    console.error(data.error);
+                    return;
                 }
-            } catch (e) { document.getElementById('status').innerText = "Lỗi kết nối API."; }
+
+                if (data.items && data.items.length > 0) {
+                    const videoId = data.items[0].id.videoId;
+                    player.loadVideoById(videoId);
+                    status.innerText = "✅ Đã tìm thấy: " + data.items[0].snippet.title;
+                } else {
+                    status.innerText = "⚠️ Không tìm thấy bài hát. Sếp thử từ khóa khác nhé!";
+                }
+            } catch (e) {
+                status.innerText = "⚠️ Mất kết nối. Sếp kiểm tra lại mạng 5G nhé!";
+            }
         }
 
+        // Điều khiển phím Enter
         document.getElementById('inputField').addEventListener('keypress', (e) => { if (e.key === 'Enter') executeSearch(); });
 
+        // Công nghệ giọng nói
         const micBtn = document.getElementById('micBtn');
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'vi-VN';
-        micBtn.onclick = () => { recognition.start(); micBtn.classList.add('active'); };
+        
+        micBtn.onclick = () => { 
+            recognition.start(); 
+            micBtn.classList.add('active');
+            document.getElementById('status-bar').innerText = "🎙️ AI đang lắng nghe mệnh lệnh từ Sếp...";
+        };
+
         recognition.onresult = (event) => {
-            document.getElementById('inputField').value = event.results[0][0].transcript;
+            const result = event.results[0][0].transcript;
+            document.getElementById('inputField').value = result;
             executeSearch();
         };
+
         recognition.onend = () => { micBtn.classList.remove('active'); };
     </script>
 </body>
