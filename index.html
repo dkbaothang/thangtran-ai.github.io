@@ -2,7 +2,10 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>🎤 THẮNG TRẦN KARAOKEAI — Kekara Pro /title>
+
+  <!-- ✅ TITLE chuẩn -->
+  <title>🎤 THẮNG TRẦN KARAOKE</title>
+
   <style>
     body {
       margin: 0;
@@ -14,7 +17,7 @@
     header {
       text-align: center;
       padding: 20px;
-      font-size: 28px;
+      font-size: 30px;
       font-weight: bold;
       color: #00ffee;
       text-shadow: 0 0 15px #00ffee;
@@ -134,7 +137,8 @@
 
 <body>
 
-<header>🎤 THẮNG TRẦN KARAOKE AI — Kekara Pro</header>
+<!-- ✅ Header chuẩn -->
+<header>🎤 THẮNG TRẦN KARAOKE</header>
 
 <div class="container">
 
@@ -156,20 +160,30 @@
 
     <div class="panel-title">🎶 Lyrics (Auto Karaoke)</div>
     <div class="lyrics" id="lyrics">
-      Chọn một bài để hiển thị lyrics text trước...
+      Chọn một bài để hiển thị lyrics...
     </div>
   </div>
 
 </div>
 
 <script>
-  const WORKER_URL = "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
+  /* ✅ Worker Proxy URL */
+  const WORKER_URL =
+    "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
+
   let playlist = [];
 
+  /* 🔍 Search Karaoke */
   async function search() {
     const q = document.getElementById("query").value;
     const resBox = document.getElementById("results");
-    resBox.innerHTML = "⏳ Đang tìm...";
+
+    if (!q.trim()) {
+      resBox.innerHTML = "❌ Nhập từ khóa trước!";
+      return;
+    }
+
+    resBox.innerHTML = "⏳ Đang tìm karaoke...";
 
     const res = await fetch(WORKER_URL + encodeURIComponent(q));
     const data = await res.json();
@@ -188,7 +202,9 @@
         <img src="${thumb}">
         <div>
           <div class="video-title">${title}</div>
-          <button onclick="addPlaylist('${videoId}','${title}')">➕ Playlist</button>
+          <button onclick="addPlaylist('${videoId}','${title}')">
+            ➕ Playlist
+          </button>
         </div>
       `;
 
@@ -196,8 +212,9 @@
     });
   }
 
+  /* ➕ Playlist */
   function addPlaylist(id, title) {
-    playlist.push({id,title});
+    playlist.push({ id, title });
     renderPlaylist();
   }
 
@@ -214,9 +231,12 @@
     });
   }
 
+  /* 🎶 Lyrics Demo */
   function showLyrics(title) {
     document.getElementById("lyrics").innerHTML =
-      "🎤 Lyrics demo cho bài:<br><br><b>" + title + "</b><br><br>(Text trước — Sync sau...)";
+      "🎤 Lyrics bài:<br><br><b>" +
+      title +
+      "</b><br><br>(Text trước — Sync sau...)";
   }
 
   /* 🎙️ Voice Search */
@@ -225,7 +245,7 @@
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Trình duyệt không hỗ trợ Voice Search!");
+      alert("❌ Trình duyệt không hỗ trợ Voice Search!");
       return;
     }
 
