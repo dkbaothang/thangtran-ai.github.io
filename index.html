@@ -1,110 +1,133 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎤 THẮNG TRẦN KARAOKE AI — Pro</title>
-
+  <meta charset="UTF-8">
+  <title>🎤 THẮNG TRẦN KARAOKE /title>
   <style>
     body {
       margin: 0;
       font-family: Arial;
-      background: #0d0d0f;
+      background: #050510;
       color: white;
     }
 
     header {
-      padding: 20px;
       text-align: center;
-      font-size: 26px;
+      padding: 20px;
+      font-size: 28px;
       font-weight: bold;
-      background: #111;
-      border-bottom: 2px solid red;
+      color: #00ffee;
+      text-shadow: 0 0 15px #00ffee;
     }
 
     .container {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      height: 100vh;
+      height: 90vh;
     }
 
-    /* LEFT SIDE */
-    .main {
+    /* LEFT PANEL */
+    .left {
       padding: 20px;
+      border-right: 2px solid rgba(0,255,255,0.2);
     }
 
     .search-box {
       display: flex;
       gap: 10px;
+      margin-bottom: 20px;
     }
 
     input {
       flex: 1;
-      padding: 14px;
-      border-radius: 12px;
+      padding: 15px;
+      border-radius: 30px;
       border: none;
       font-size: 16px;
+      outline: none;
     }
 
     button {
-      padding: 14px 20px;
+      padding: 15px 20px;
+      border-radius: 30px;
       border: none;
-      border-radius: 12px;
-      background: red;
-      color: white;
       cursor: pointer;
       font-weight: bold;
+      background: #00ffee;
+      color: black;
+      box-shadow: 0 0 15px #00ffee;
     }
 
-    iframe {
-      width: 100%;
-      height: 420px;
-      margin-top: 20px;
-      border-radius: 16px;
-      border: none;
+    button:hover {
+      background: #00ccff;
     }
 
-    /* Lyrics Panel */
-    .lyrics {
-      margin-top: 20px;
-      padding: 15px;
-      background: #1a1a1f;
-      border-radius: 14px;
-      min-height: 120px;
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      overflow-y: auto;
+      max-height: 70vh;
     }
 
-    .lyrics h3 {
-      margin: 0;
-      color: pink;
-    }
-
-    /* RIGHT SIDE Playlist */
-    .playlist {
-      border-left: 2px solid #222;
-      padding: 20px;
-      background: #111;
-    }
-
-    .playlist h2 {
-      margin-top: 0;
-      color: red;
-    }
-
-    .song {
-      padding: 12px;
-      margin-bottom: 10px;
-      background: #1c1c22;
-      border-radius: 12px;
+    .video-item {
+      display: flex;
+      gap: 15px;
+      padding: 10px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.05);
       cursor: pointer;
+      transition: 0.2s;
     }
 
-    .song:hover {
-      background: #2a2a33;
+    .video-item:hover {
+      background: rgba(0,255,255,0.15);
     }
 
-    .status {
-      margin-top: 10px;
-      color: pink;
+    .video-item img {
+      width: 160px;
+      border-radius: 12px;
+    }
+
+    .video-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #00ffee;
+    }
+
+    /* RIGHT PANEL */
+    .right {
+      padding: 20px;
+    }
+
+    .panel-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff;
+    }
+
+    .playlist {
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-radius: 15px;
+      min-height: 200px;
+      margin-bottom: 20px;
+    }
+
+    .playlist-item {
+      padding: 8px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .lyrics {
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 15px;
+      min-height: 250px;
+      font-size: 16px;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -115,84 +138,107 @@
 
 <div class="container">
 
-  <!-- LEFT MAIN -->
-  <div class="main">
+  <!-- LEFT -->
+  <div class="left">
     <div class="search-box">
-      <input id="q" placeholder="Nhập bài hát karaoke... VD: Sơn Tùng"/>
-      <button onclick="searchSong()">HÁT</button>
+      <input id="query" placeholder="Nhập tên bài karaoke...">
+      <button onclick="search()">🔍</button>
+      <button onclick="voiceSearch()">🎙️</button>
     </div>
 
-    <p class="status" id="status"></p>
-
-    <!-- Player -->
-    <div id="player"></div>
-
-    <!-- Lyrics -->
-    <div class="lyrics">
-      <h3>📜 Lyrics Panel</h3>
-      <p id="lyricsText">Chọn bài hát để hiển thị lời...</p>
-    </div>
+    <div class="results" id="results"></div>
   </div>
 
-  <!-- RIGHT PLAYLIST -->
-  <div class="playlist">
-    <h2>🎶 Playlist Queue</h2>
-    <div id="playlist"></div>
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="panel-title">📌 Playlist</div>
+    <div class="playlist" id="playlist"></div>
+
+    <div class="panel-title">🎶 Lyrics (Auto Karaoke)</div>
+    <div class="lyrics" id="lyrics">
+      Chọn một bài để hiển thị lyrics text trước...
+    </div>
   </div>
 
 </div>
 
 <script>
-  const WORKER =
-    "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
+  const WORKER_URL = "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
+  let playlist = [];
 
-  let queue = [];
+  async function search() {
+    const q = document.getElementById("query").value;
+    const resBox = document.getElementById("results");
+    resBox.innerHTML = "⏳ Đang tìm...";
 
-  async function searchSong() {
-    const keyword = document.getElementById("q").value.trim();
-    const status = document.getElementById("status");
-
-    if (!keyword) return;
-
-    status.innerText = "⏳ Đang tìm karaoke...";
-
-    const res = await fetch(WORKER + encodeURIComponent(keyword));
+    const res = await fetch(WORKER_URL + encodeURIComponent(q));
     const data = await res.json();
 
-    queue = data.items.map(item => ({
-      id: item.id.videoId,
-      title: item.snippet.title
-    }));
+    resBox.innerHTML = "";
 
-    renderPlaylist();
-    status.innerText = "✅ Chọn bài để phát!";
-  }
+    data.items.forEach(item => {
+      const videoId = item.id.videoId;
+      const title = item.snippet.title;
+      const thumb = item.snippet.thumbnails.medium.url;
 
-  function renderPlaylist() {
-    const div = document.getElementById("playlist");
-    div.innerHTML = "";
+      const div = document.createElement("div");
+      div.className = "video-item";
 
-    queue.forEach(song => {
-      const el = document.createElement("div");
-      el.className = "song";
-      el.innerText = "🎵 " + song.title;
-      el.onclick = () => playSong(song);
-      div.appendChild(el);
+      div.innerHTML = `
+        <img src="${thumb}">
+        <div>
+          <div class="video-title">${title}</div>
+          <button onclick="addPlaylist('${videoId}','${title}')">➕ Playlist</button>
+        </div>
+      `;
+
+      resBox.appendChild(div);
     });
   }
 
-  function playSong(song) {
-    document.getElementById("player").innerHTML = `
-      <iframe
-        src="https://www.youtube.com/embed/${song.id}"
-        allowfullscreen>
-      </iframe>
-    `;
+  function addPlaylist(id, title) {
+    playlist.push({id,title});
+    renderPlaylist();
+  }
 
-    // Lyrics demo text
-    document.getElementById("lyricsText").innerText =
-      "🎤 Lyrics cho: " + song.title +
-      "\n\n(Phase 2: sẽ tự động load lyric thật)";
+  function renderPlaylist() {
+    const box = document.getElementById("playlist");
+    box.innerHTML = "";
+
+    playlist.forEach(v => {
+      const div = document.createElement("div");
+      div.className = "playlist-item";
+      div.innerText = "🎵 " + v.title;
+      div.onclick = () => showLyrics(v.title);
+      box.appendChild(div);
+    });
+  }
+
+  function showLyrics(title) {
+    document.getElementById("lyrics").innerHTML =
+      "🎤 Lyrics demo cho bài:<br><br><b>" + title + "</b><br><br>(Text trước — Sync sau...)";
+  }
+
+  /* 🎙️ Voice Search */
+  function voiceSearch() {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Trình duyệt không hỗ trợ Voice Search!");
+      return;
+    }
+
+    const recog = new SpeechRecognition();
+    recog.lang = "vi-VN";
+
+    recog.onresult = function(e) {
+      const text = e.results[0][0].transcript;
+      document.getElementById("query").value = text;
+      search();
+    };
+
+    recog.start();
   }
 </script>
 
