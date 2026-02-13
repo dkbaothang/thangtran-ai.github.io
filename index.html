@@ -1,98 +1,199 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>🎤 THẮNG TRẦN KARAOKE AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎤 THẮNG TRẦN KARAOKE AI — Pro</title>
+
   <style>
-    body { background: #000; color: #fff; font-family: 'Segoe UI', Arial; text-align: center; padding: 20px; margin: 0; }
-    .control-panel { background: #111; padding: 20px; border-bottom: 3px solid #f00; position: sticky; top: 0; z-index: 100; }
-    .search-container { display: flex; max-width: 800px; margin: 0 auto; gap: 10px; }
-    input { flex: 1; padding: 15px; border-radius: 30px; border: 2px solid #333; background: #1a1a1a; color: #fff; font-size: 16px; outline: none; }
-    button { padding: 10px 25px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; background: #f00; color: #fff; }
-    #player-box { margin: 20px auto; max-width: 950px; aspect-ratio: 16/9; background: #000; border-radius: 20px; overflow: hidden; box-shadow: 0 0 50px rgba(255,0,0,0.3); }
-    #status { color: #f44; font-size: 14px; margin-top: 10px; font-weight: bold; }
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0d0d0f;
+      color: white;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      background: #111;
+      border-bottom: 2px solid red;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      height: 100vh;
+    }
+
+    /* LEFT SIDE */
+    .main {
+      padding: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      background: red;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    iframe {
+      width: 100%;
+      height: 420px;
+      margin-top: 20px;
+      border-radius: 16px;
+      border: none;
+    }
+
+    /* Lyrics Panel */
+    .lyrics {
+      margin-top: 20px;
+      padding: 15px;
+      background: #1a1a1f;
+      border-radius: 14px;
+      min-height: 120px;
+    }
+
+    .lyrics h3 {
+      margin: 0;
+      color: pink;
+    }
+
+    /* RIGHT SIDE Playlist */
+    .playlist {
+      border-left: 2px solid #222;
+      padding: 20px;
+      background: #111;
+    }
+
+    .playlist h2 {
+      margin-top: 0;
+      color: red;
+    }
+
+    .song {
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #1c1c22;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .song:hover {
+      background: #2a2a33;
+    }
+
+    .status {
+      margin-top: 10px;
+      color: pink;
+    }
   </style>
 </head>
+
 <body>
 
-<div class="control-panel">
-  <h1>🎤 THẮNG TRẦN KARAOKE AI</h1>
+<header>🎤 THẮNG TRẦN KARAOKE AI — Kekara Pro</header>
 
-  <div class="search-container">
-    <input type="text" id="inputField" placeholder="Sếp muốn hát bài gì ạ?...">
-    <button id="micBtn" style="background:#333">🎤</button>
-    <button onclick="executeSearch()">HÁT</button>
+<div class="container">
+
+  <!-- LEFT MAIN -->
+  <div class="main">
+    <div class="search-box">
+      <input id="q" placeholder="Nhập bài hát karaoke... VD: Sơn Tùng"/>
+      <button onclick="searchSong()">HÁT</button>
+    </div>
+
+    <p class="status" id="status"></p>
+
+    <!-- Player -->
+    <div id="player"></div>
+
+    <!-- Lyrics -->
+    <div class="lyrics">
+      <h3>📜 Lyrics Panel</h3>
+      <p id="lyricsText">Chọn bài hát để hiển thị lời...</p>
+    </div>
   </div>
 
-  <div id="status">Sẵn sàng phục vụ Sếp Thắng Trần!</div>
-</div>
+  <!-- RIGHT PLAYLIST -->
+  <div class="playlist">
+    <h2>🎶 Playlist Queue</h2>
+    <div id="playlist"></div>
+  </div>
 
-<div id="player-box">
-  <div id="player"></div>
 </div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-  var player;
+  const WORKER =
+    "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
 
-  // ✅ Worker Proxy URL (API Key nằm bí mật trong Cloudflare)
-  const WORKER_URL = "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
+  let queue = [];
 
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-      height: '100%',
-      width: '100%',
-      videoId: 'vs_Ji3xfkzI',
-      playerVars: {
-        autoplay: 1,
-        origin: window.location.origin,
-        enablejsapi: 1
-      }
+  async function searchSong() {
+    const keyword = document.getElementById("q").value.trim();
+    const status = document.getElementById("status");
+
+    if (!keyword) return;
+
+    status.innerText = "⏳ Đang tìm karaoke...";
+
+    const res = await fetch(WORKER + encodeURIComponent(keyword));
+    const data = await res.json();
+
+    queue = data.items.map(item => ({
+      id: item.id.videoId,
+      title: item.snippet.title
+    }));
+
+    renderPlaylist();
+    status.innerText = "✅ Chọn bài để phát!";
+  }
+
+  function renderPlaylist() {
+    const div = document.getElementById("playlist");
+    div.innerHTML = "";
+
+    queue.forEach(song => {
+      const el = document.createElement("div");
+      el.className = "song";
+      el.innerText = "🎵 " + song.title;
+      el.onclick = () => playSong(song);
+      div.appendChild(el);
     });
   }
 
-  async function executeSearch() {
-    const input = document.getElementById('inputField').value.trim();
-    if (!input) return;
+  function playSong(song) {
+    document.getElementById("player").innerHTML = `
+      <iframe
+        src="https://www.youtube.com/embed/${song.id}"
+        allowfullscreen>
+      </iframe>
+    `;
 
-    document.getElementById('status').innerText = "🔍 AI đang tìm bài hát karaoke cho Sếp...";
-
-    const url = WORKER_URL + encodeURIComponent(input + " karaoke");
-
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.items && data.items.length > 0) {
-        const videoId = data.items[0].id.videoId;
-        const title = data.items[0].snippet.title;
-
-        player.loadVideoById(videoId);
-        document.getElementById('status').innerText = "✅ Đã tìm thấy: " + title;
-      } else {
-        document.getElementById('status').innerText = "⚠️ Không tìm thấy bài hát.";
-      }
-
-    } catch (e) {
-      document.getElementById('status').innerText = "❌ Lỗi kết nối Worker.";
-    }
+    // Lyrics demo text
+    document.getElementById("lyricsText").innerText =
+      "🎤 Lyrics cho: " + song.title +
+      "\n\n(Phase 2: sẽ tự động load lyric thật)";
   }
-
-  // 🎙️ Voice Search
-  const micBtn = document.getElementById('micBtn');
-  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = 'vi-VN';
-
-  micBtn.onclick = () => {
-    recognition.start();
-    document.getElementById('status').innerText = "🎙️ AI đang nghe Sếp...";
-  };
-
-  recognition.onresult = (event) => {
-    document.getElementById('inputField').value = event.results[0][0].transcript;
-    executeSearch();
-  };
 </script>
 
 </body>
