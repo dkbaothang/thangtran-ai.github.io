@@ -2,140 +2,263 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>🎤 THẮNG TRẦN KARAOKE</title>
 
   <style>
     body {
       margin: 0;
-      font-family: Arial;
-      background: black;
+      font-family: Arial, sans-serif;
+      background: #050510;
       color: white;
       overflow: hidden;
     }
 
-    /* 🔥 Logo góc trái */
-    .logo-bar {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 9999;
-    }
-
-    .logo-text {
+    /* HEADER */
+    header {
       font-size: 14px;
+      padding: 10px 15px;
+      color: #00ffee;
       font-weight: bold;
-      color: cyan;
-      cursor: pointer;
-      text-shadow: 0 0 8px cyan;
+      text-shadow: 0 0 10px #00ffee;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 20;
     }
 
-    /* ✅ QR nhỏ */
-    .qr-box {
-      width: 35px;
-      height: 35px;
-      border: 2px solid cyan;
-      cursor: pointer;
+    /* MAIN LAYOUT */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      height: 100vh;
     }
 
-    .qr-box img {
+    /* VIDEO PLAYER */
+    .player {
+      position: relative;
+      background: black;
+    }
+
+    iframe {
       width: 100%;
       height: 100%;
-    }
-
-    /* 🎥 Video Fullscreen */
-    iframe {
-      width: 100vw;
-      height: 100vh;
       border: none;
     }
 
-    /* Popup QR */
-    .popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999;
+    /* PLAYLIST PANEL */
+    .sidebar {
+      background: rgba(10,10,30,0.95);
+      border-left: 2px solid rgba(0,255,255,0.2);
+      padding: 15px;
+      overflow-y: auto;
     }
 
-    .popup-content {
-      background: #111;
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 0 20px cyan;
+    .sidebar h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #00ffee;
+      text-shadow: 0 0 10px #00ffee;
     }
 
-    .popup-content img {
-      width: 250px;
-      height: 250px;
+    /* SEARCH BOX */
+    .search-box {
+      display: flex;
+      gap: 8px;
+      margin: 15px 0;
     }
 
-    .popup-content p {
-      margin-top: 10px;
-      font-size: 15px;
-      color: cyan;
-    }
-
-    .close-btn {
-      margin-top: 15px;
-      padding: 10px 20px;
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 25px;
       border: none;
-      border-radius: 10px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 12px 15px;
+      border-radius: 25px;
+      border: none;
       cursor: pointer;
-      background: cyan;
       font-weight: bold;
+      background: #00ffee;
+      color: black;
+      box-shadow: 0 0 10px #00ffee;
     }
 
+    button:hover {
+      background: #00ccff;
+    }
+
+    /* RESULTS */
+    .video-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .video-item:hover {
+      background: rgba(0,255,255,0.15);
+    }
+
+    .video-item img {
+      width: 90px;
+      border-radius: 10px;
+    }
+
+    .video-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+    }
+
+    /* NOW PLAYING */
+    .now-playing {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      font-size: 14px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff;
+    }
+
+    /* MOBILE MODE */
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 45%;
+        border-left: none;
+        border-top: 2px solid rgba(0,255,255,0.2);
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- 🔥 Logo + QR góc trái -->
-  <div class="logo-bar">
+<header>🎤 THẮNG TRẦN KARAOKE</header>
 
-    <!-- QR nhỏ -->
-    <div class="qr-box" onclick="openQR()">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://dkbaothang.github.io/thangtran-ai.github.io/">
-    </div>
+<div class="container">
 
-    <!-- Logo click mở web -->
-    <div class="logo-text"
-      onclick="window.open('https://dkbaothang.github.io/thangtran-ai.github.io/', '_blank')">
-      THẮNG TRẦN KARAOKE 🎤
-    </div>
-
+  <!-- VIDEO PLAYER -->
+  <div class="player">
+    <iframe id="playerFrame"
+      src="https://www.youtube.com/embed?autoplay=0"
+      allowfullscreen>
+    </iframe>
   </div>
 
-  <!-- 🎥 Video Fullscreen -->
-  <iframe id="player"
-    src="https://www.youtube.com/embed?autoplay=1&controls=1">
-  </iframe>
+  <!-- SIDEBAR PLAYLIST -->
+  <div class="sidebar">
+    <h2>Playlist</h2>
 
-  <!-- Popup QR -->
-  <div class="popup" id="qrPopup" onclick="closeQR()">
-    <div class="popup-content">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://dkbaothang.github.io/thangtran-ai.github.io/">
-      <p>📌 Quét QR để hát ngay cùng THẮNG TRẦN KARAOKE</p>
-      <button class="close-btn">Đóng</button>
+    <!-- SEARCH -->
+    <div class="search-box">
+      <input id="query" placeholder="Nhập tên bài karaoke...">
+      <button onclick="search()">🔍</button>
+      <button onclick="voiceSearch()">🎙️</button>
     </div>
+
+    <!-- NOW PLAYING -->
+    <div class="now-playing" id="nowPlaying">
+      Chưa chọn bài hát...
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results"></div>
   </div>
 
-  <script>
-    function openQR() {
-      document.getElementById("qrPopup").style.display = "flex";
+</div>
+
+<script>
+  // ✅ Worker Proxy URL
+  const WORKER_URL =
+    "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
+
+  // SEARCH FUNCTION
+  async function search() {
+    const q = document.getElementById("query").value;
+    const resultsBox = document.getElementById("results");
+
+    resultsBox.innerHTML = "⏳ Đang tìm...";
+
+    try {
+      const res = await fetch(WORKER_URL + encodeURIComponent(q));
+      const data = await res.json();
+
+      resultsBox.innerHTML = "";
+
+      data.items.forEach(item => {
+        const videoId = item.id.videoId;
+        const title = item.snippet.title;
+        const thumb = item.snippet.thumbnails.medium.url;
+
+        const div = document.createElement("div");
+        div.className = "video-item";
+
+        div.innerHTML = `
+          <img src="${thumb}">
+          <div>
+            <div class="video-title">${title}</div>
+          </div>
+        `;
+
+        div.onclick = () => playVideo(videoId, title);
+
+        resultsBox.appendChild(div);
+      });
+
+    } catch (err) {
+      resultsBox.innerHTML = "❌ Lỗi kết nối Worker.";
+    }
+  }
+
+  // PLAY VIDEO
+  function playVideo(videoId, title) {
+    document.getElementById("playerFrame").src =
+      "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+
+    document.getElementById("nowPlaying").innerHTML =
+      "🎤 Đang hát: " + title;
+  }
+
+  // 🎙️ Voice Search
+  function voiceSearch() {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Trình duyệt không hỗ trợ Voice Search!");
+      return;
     }
 
-    function closeQR() {
-      document.getElementById("qrPopup").style.display = "none";
-    }
-  </script>
+    const recog = new SpeechRecognition();
+    recog.lang = "vi-VN";
+
+    recog.onresult = function(e) {
+      const text = e.results[0][0].transcript;
+      document.getElementById("query").value = text;
+      search();
+    };
+
+    recog.start();
+  }
+</script>
 
 </body>
 </html>
