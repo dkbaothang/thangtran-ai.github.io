@@ -2,158 +2,191 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>THẮNG TRẦN KARAOKE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎤 THẮNG TRẦN KARAOKE</title>
 
   <style>
     body {
       margin: 0;
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: black;
-      overflow: hidden;
       color: white;
     }
 
-    /* Video Fullscreen */
-    #player {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      border: none;
-      z-index: 1;
-    }
-
-    /* Header nhỏ */
-    header {
-      position: fixed;
-      top: 8px;
-      left: 12px;
-      font-size: 14px;
-      z-index: 10;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.5);
-      color: cyan;
-      text-shadow: 0 0 8px cyan;
-    }
-
-    /* Popup Playlist Button */
-    #btnPlaylist {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 20;
-      background: rgba(0,255,255,0.2);
-      border: 1px solid cyan;
-      color: cyan;
-      padding: 14px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-      box-shadow: 0 0 20px cyan;
-    }
-
-    /* Playlist Popup Panel */
-    #popup {
+    /* HEADER nhỏ góc trái */
+    .topbar {
       position: fixed;
       top: 0;
-      right: -400px;
-      width: 350px;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.6);
+      padding: 6px 12px;
+      font-size: 14px;
+      z-index: 1000;
+      color: #00ffee;
+      font-weight: bold;
+    }
+
+    /* Layout chính */
+    .main {
+      display: flex;
       height: 100vh;
-      background: rgba(10,10,30,0.95);
-      z-index: 30;
-      transition: 0.3s;
-      padding: 15px;
-      overflow-y: auto;
-      border-left: 2px solid cyan;
+      overflow: hidden;
     }
 
-    #popup.active {
-      right: 0;
+    /* VIDEO full */
+    .video-area {
+      flex: 3;
+      position: relative;
+      background: black;
     }
 
-    .song {
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 12px;
-      cursor: pointer;
-      background: rgba(255,255,255,0.05);
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
-    .song:hover {
-      background: rgba(0,255,255,0.2);
-    }
-
-    /* Lyrics Overlay */
-    #lyricsBox {
-      position: fixed;
-      bottom: 80px;
+    /* Lyrics overlay */
+    .lyrics-overlay {
+      position: absolute;
+      bottom: 10%;
       width: 100%;
       text-align: center;
       font-size: 26px;
       font-weight: bold;
-      z-index: 15;
-      text-shadow: 0 0 12px magenta;
+      color: #ff00ff;
+      text-shadow: 0 0 15px black;
+    }
+
+    /* PLAYLIST PANEL */
+    .sidebar {
+      flex: 1;
+      background: #111;
+      border-left: 2px solid rgba(0,255,255,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      font-size: 20px;
+      padding: 10px;
+      color: #00ffee;
+    }
+
+    /* Search box */
+    .search-box {
+      display: flex;
+      padding: 10px;
+      gap: 8px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      background: #00ffee;
+      font-weight: bold;
+    }
+
+    /* Result list */
+    .results {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .video-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      transition: 0.2s;
+    }
+
+    .video-item:hover {
+      background: rgba(0,255,255,0.15);
+    }
+
+    .video-item img {
+      width: 90px;
+      border-radius: 8px;
+    }
+
+    .video-title {
+      font-size: 14px;
       color: white;
+    }
+
+    /* MOBILE MODE */
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        height: 45%;
+        border-left: none;
+        border-top: 2px solid rgba(0,255,255,0.2);
+      }
+
+      .lyrics-overlay {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<header>🎤 THẮNG TRẦN KARAOKE</header>
+<div class="topbar">🎤 THẮNG TRẦN KARAOKE</div>
 
-<!-- Fullscreen Video -->
-<iframe id="player"></iframe>
+<div class="main">
 
-<!-- Lyrics -->
-<div id="lyricsBox">🎶 Lyrics sẽ hiển thị ở đây...</div>
+  <!-- VIDEO FULL -->
+  <div class="video-area">
+    <iframe id="player"
+      src="https://www.youtube.com/embed?autoplay=1"
+      allow="autoplay; encrypted-media">
+    </iframe>
 
-<!-- Playlist Button -->
-<div id="btnPlaylist" onclick="togglePopup()">📌</div>
+    <div class="lyrics-overlay" id="lyrics">
+      🎶 Đang hát: Chọn bài để phát Karaoke...
+    </div>
+  </div>
 
-<!-- Playlist Popup -->
-<div id="popup">
-  <h2 style="color:cyan;">Playlist</h2>
+  <!-- PLAYLIST PANEL -->
+  <div class="sidebar">
+    <h2>Playlist</h2>
 
-  <!-- Search -->
-  <input id="query"
-    placeholder="Tìm karaoke..."
-    style="width:100%;padding:10px;border-radius:10px;border:none;">
+    <div class="search-box">
+      <input id="query" placeholder="Tìm karaoke...">
+      <button onclick="search()">🔍</button>
+      <button onclick="voiceSearch()">🎙️</button>
+    </div>
 
-  <button onclick="search()"
-    style="margin-top:10px;width:100%;padding:10px;
-    border:none;border-radius:10px;
-    background:red;color:white;font-weight:bold;">
-    🔍 Search
-  </button>
+    <div class="results" id="results"></div>
+  </div>
 
-  <button onclick="voiceSearch()"
-    style="margin-top:10px;width:100%;padding:10px;
-    border:none;border-radius:10px;
-    background:#333;color:white;">
-    🎙 Voice
-  </button>
-
-  <hr style="margin:15px 0;">
-
-  <div id="results"></div>
 </div>
 
 <script>
   const WORKER_URL =
     "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
 
-  let playlist = [];
-  let currentIndex = 0;
-
-  /* Popup Toggle */
-  function togglePopup() {
-    document.getElementById("popup").classList.toggle("active");
-  }
-
-  /* Search */
   async function search() {
     const q = document.getElementById("query").value;
     const box = document.getElementById("results");
@@ -161,54 +194,34 @@
 
     const res = await fetch(WORKER_URL + encodeURIComponent(q));
     const data = await res.json();
+
     box.innerHTML = "";
 
-    playlist = [];
-
-    data.items.forEach((item, i) => {
+    data.items.forEach(item => {
       const id = item.id.videoId;
       const title = item.snippet.title;
-
-      playlist.push({ id, title });
+      const thumb = item.snippet.thumbnails.medium.url;
 
       const div = document.createElement("div");
-      div.className = "song";
-      div.innerText = "🎵 " + title;
+      div.className = "video-item";
 
-      div.onclick = () => playSong(i);
+      div.innerHTML = `
+        <img src="${thumb}">
+        <div class="video-title">${title}</div>
+      `;
 
+      div.onclick = () => playVideo(id, title);
       box.appendChild(div);
     });
   }
 
-  /* Play Song */
-  function playSong(index) {
-    currentIndex = index;
-
-    const videoId = playlist[index].id;
-
+  function playVideo(id, title) {
     document.getElementById("player").src =
-      "https://www.youtube.com/embed/" +
-      videoId +
-      "?autoplay=1&controls=0";
+      "https://www.youtube.com/embed/" + id + "?autoplay=1";
 
-    showLyrics(playlist[index].title);
-
-    togglePopup();
-  }
-
-  /* Auto Next */
-  function nextSong() {
-    if (currentIndex < playlist.length - 1) {
-      playSong(currentIndex + 1);
-    }
-  }
-
-  /* Demo Lyrics */
-  function showLyrics(title) {
-    document.getElementById("lyricsBox").innerHTML =
-      "🎤 Đang hát: <br>" + title +
-      "<br><small>(LRC Sync sẽ nâng cấp bước tiếp)</small>";
+    document.getElementById("lyrics").innerHTML =
+      "🎤 Đang hát:<br>" + title +
+      "<br><small>(Lyrics Online sẽ nâng cấp tiếp)</small>";
   }
 
   /* Voice Search */
@@ -217,7 +230,7 @@
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Không hỗ trợ Voice Search!");
+      alert("Trình duyệt không hỗ trợ Voice Search!");
       return;
     }
 
@@ -225,8 +238,8 @@
     recog.lang = "vi-VN";
 
     recog.onresult = function(e) {
-      const text = e.results[0][0].transcript;
-      document.getElementById("query").value = text;
+      document.getElementById("query").value =
+        e.results[0][0].transcript;
       search();
     };
 
