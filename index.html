@@ -2,346 +2,261 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>🎤 THẮNG TRẦN KARAOKE PREMIUM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>🎤 THẮNG TRẦN KARAOKE</title>
 
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: black;
+      background: #050510;
+      color: white;
       overflow: hidden;
-      color: white;
     }
 
-    /* ===== TOP LEFT LOGO + QR ===== */
-    #topHeader {
-      position: fixed;
-      top: 10px;
-      left: 12px;
-      z-index: 999;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    /* HEADER */
+    header {
       font-size: 14px;
+      padding: 10px 15px;
+      color: #00ffee;
       font-weight: bold;
-    }
-
-    #topHeader a {
-      color: cyan;
-      text-decoration: none;
-      text-shadow: 0 0 10px cyan;
-    }
-
-    .qr-btn {
-      cursor: pointer;
-      font-size: 13px;
-      padding: 5px 12px;
-      border-radius: 14px;
-      border: 1px solid cyan;
-      box-shadow: 0 0 12px cyan;
-      background: rgba(0,255,255,0.2);
-    }
-
-    /* ===== VIDEO FULLSCREEN ===== */
-    iframe {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      border: none;
-      z-index: 1;
-    }
-
-    /* ===== LYRICS OVERLAY ===== */
-    #lyricsBox {
-      position: fixed;
-      bottom: 15%;
-      width: 100%;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 20px magenta;
-      z-index: 50;
-    }
-
-    /* ===== POPUP PLAYLIST BUTTON ===== */
-    #btnPlaylist {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 200;
-      background: rgba(0,255,255,0.2);
-      border: 1px solid cyan;
-      padding: 14px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-      box-shadow: 0 0 20px cyan;
-    }
-
-    /* ===== PLAYLIST SLIDE PANEL ===== */
-    #popup {
-      position: fixed;
+      text-shadow: 0 0 10px #00ffee;
+      position: absolute;
       top: 0;
-      right: -420px;
-      width: 380px;
+      left: 0;
+      z-index: 20;
+    }
+
+    /* MAIN LAYOUT */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
       height: 100vh;
-      background: rgba(10,10,30,0.96);
-      z-index: 300;
-      transition: 0.35s;
+    }
+
+    /* VIDEO PLAYER */
+    .player {
+      position: relative;
+      background: black;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* PLAYLIST PANEL */
+    .sidebar {
+      background: rgba(10,10,30,0.95);
+      border-left: 2px solid rgba(0,255,255,0.2);
       padding: 15px;
       overflow-y: auto;
-      border-left: 2px solid cyan;
     }
 
-    #popup.active {
-      right: 0;
+    .sidebar h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #00ffee;
+      text-shadow: 0 0 10px #00ffee;
+    }
+
+    /* SEARCH BOX */
+    .search-box {
+      display: flex;
+      gap: 8px;
+      margin: 15px 0;
     }
 
     input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 12px;
+      flex: 1;
+      padding: 12px;
+      border-radius: 25px;
       border: none;
       outline: none;
-      margin-top: 10px;
+      font-size: 14px;
     }
 
     button {
-      width: 100%;
-      padding: 10px;
+      padding: 12px 15px;
+      border-radius: 25px;
       border: none;
-      border-radius: 12px;
-      margin-top: 10px;
       cursor: pointer;
       font-weight: bold;
+      background: #00ffee;
+      color: black;
+      box-shadow: 0 0 10px #00ffee;
     }
 
-    .btnSearch { background: red; color: white; }
-    .btnVoice  { background: #333; color: white; }
-    .btnShare  { background: cyan; color: black; }
+    button:hover {
+      background: #00ccff;
+    }
 
-    .song {
-      padding: 10px;
-      margin: 10px 0;
+    /* RESULTS */
+    .video-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px;
+      margin-bottom: 10px;
       border-radius: 12px;
+      background: rgba(255,255,255,0.05);
       cursor: pointer;
-      background: rgba(255,255,255,0.06);
+      transition: 0.2s;
     }
 
-    .song:hover {
-      background: rgba(0,255,255,0.2);
+    .video-item:hover {
+      background: rgba(0,255,255,0.15);
     }
 
-    /* MOBILE */
-    @media(max-width:768px){
-      #popup { width: 100%; }
-      #lyricsBox { font-size: 20px; }
+    .video-item img {
+      width: 90px;
+      border-radius: 10px;
+    }
+
+    .video-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+    }
+
+    /* NOW PLAYING */
+    .now-playing {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      font-size: 14px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff;
+    }
+
+    /* MOBILE MODE */
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 45%;
+        border-left: none;
+        border-top: 2px solid rgba(0,255,255,0.2);
+      }
     }
   </style>
 </head>
 
 <body>
 
-<!-- TOP HEADER -->
-<div id="topHeader">
-  <span onclick="toggleQR()" class="qr-btn">📌 QR</span>
-  <a href="https://dkbaothang.github.io/thangtran-ai.github.io/" target="_blank">
-    🎤 THẮNG TRẦN KARAOKE
-  </a>
-</div>
+<header>🎤 THẮNG TRẦN KARAOKE</header>
 
-<!-- VIDEO -->
-<iframe id="player"></iframe>
+<div class="container">
 
-<!-- LYRICS -->
-<div id="lyricsBox">🎶 Chọn bài để hát Karaoke...</div>
+  <!-- VIDEO PLAYER -->
+  <div class="player">
+    <iframe id="playerFrame"
+      src="https://www.youtube.com/embed?autoplay=0"
+      allowfullscreen>
+    </iframe>
+  </div>
 
-<!-- PLAYLIST BUTTON -->
-<div id="btnPlaylist" onclick="togglePopup()">📌</div>
+  <!-- SIDEBAR PLAYLIST -->
+  <div class="sidebar">
+    <h2>Playlist</h2>
 
-<!-- PLAYLIST POPUP -->
-<div id="popup">
-  <h2 style="color:cyan;">🎶 Playlist Premium</h2>
+    <!-- SEARCH -->
+    <div class="search-box">
+      <input id="query" placeholder="Nhập tên bài karaoke...">
+      <button onclick="search()">🔍</button>
+      <button onclick="voiceSearch()">🎙️</button>
+    </div>
 
-  <input id="query" placeholder="Tìm bài karaoke...">
+    <!-- NOW PLAYING -->
+    <div class="now-playing" id="nowPlaying">
+      Chưa chọn bài hát...
+    </div>
 
-  <button class="btnSearch" onclick="search()">🔍 Search</button>
-  <button class="btnVoice" onclick="voiceSearch()">🎙 Voice</button>
+    <!-- RESULTS -->
+    <div id="results"></div>
+  </div>
 
-  <button class="btnShare" onclick="shareApp()">📤 Share Zalo/Facebook</button>
-
-  <hr style="margin:15px 0;">
-
-  <div id="results"></div>
-</div>
-
-<!-- QR POPUP -->
-<div id="qrPopup" style="
-  display:none;
-  position:fixed;
-  top:0;left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.88);
-  z-index:9999;
-  text-align:center;
-  padding-top:90px;">
-
-  <h2 style="color:cyan;">📌 Quét QR để hát ngay</h2>
-
-  <img
-    src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
-    style="margin-top:25px;border-radius:20px;box-shadow:0 0 25px cyan;"
-  >
-
-  <button onclick="toggleQR()"
-    style="margin-top:30px;padding:12px 28px;
-    border:none;border-radius:20px;
-    background:red;color:white;font-weight:bold;">
-    ❌ Đóng
-  </button>
 </div>
 
 <script>
+  // ✅ Worker Proxy URL
   const WORKER_URL =
     "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
 
-  let playlist = [];
-  let currentIndex = 0;
-  let lrcLines = [];
-  let syncTimer = null;
-
-  /* Popup Playlist */
-  function togglePopup() {
-    document.getElementById("popup").classList.toggle("active");
-  }
-
-  /* QR Popup */
-  function toggleQR() {
-    const p = document.getElementById("qrPopup");
-    p.style.display = (p.style.display === "block") ? "none" : "block";
-  }
-
-  /* Share App */
-  function shareApp() {
-    const url = "https://dkbaothang.github.io/thangtran-ai.github.io/";
-    navigator.share
-      ? navigator.share({ title: "THẮNG TRẦN KARAOKE", url })
-      : alert("Copy link chia sẻ:\n" + url);
-  }
-
-  /* Search YouTube */
+  // SEARCH FUNCTION
   async function search() {
     const q = document.getElementById("query").value;
-    const box = document.getElementById("results");
-    box.innerHTML = "⏳ Đang tìm...";
+    const resultsBox = document.getElementById("results");
 
-    const res = await fetch(WORKER_URL + encodeURIComponent(q));
-    const data = await res.json();
+    resultsBox.innerHTML = "⏳ Đang tìm...";
 
-    playlist = [];
-    box.innerHTML = "";
+    try {
+      const res = await fetch(WORKER_URL + encodeURIComponent(q));
+      const data = await res.json();
 
-    data.items.forEach((item, i) => {
-      const id = item.id.videoId;
-      const title = item.snippet.title;
+      resultsBox.innerHTML = "";
 
-      playlist.push({ id, title });
+      data.items.forEach(item => {
+        const videoId = item.id.videoId;
+        const title = item.snippet.title;
+        const thumb = item.snippet.thumbnails.medium.url;
 
-      const div = document.createElement("div");
-      div.className = "song";
-      div.innerText = "🎵 " + title;
-      div.onclick = () => playSong(i);
+        const div = document.createElement("div");
+        div.className = "video-item";
 
-      box.appendChild(div);
-    });
+        div.innerHTML = `
+          <img src="${thumb}">
+          <div>
+            <div class="video-title">${title}</div>
+          </div>
+        `;
+
+        div.onclick = () => playVideo(videoId, title);
+
+        resultsBox.appendChild(div);
+      });
+
+    } catch (err) {
+      resultsBox.innerHTML = "❌ Lỗi kết nối Worker.";
+    }
   }
 
-  /* Play Song */
-  function playSong(index) {
-    currentIndex = index;
-    const song = playlist[index];
+  // PLAY VIDEO
+  function playVideo(videoId, title) {
+    document.getElementById("playerFrame").src =
+      "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
 
-    document.getElementById("player").src =
-      "https://www.youtube.com/embed/" + song.id + "?autoplay=1&controls=0";
-
-    document.getElementById("lyricsBox").innerText =
-      "🎤 Đang hát: " + song.title;
-
-    fetchLyricsLRCLib(song.title);
-
-    togglePopup();
+    document.getElementById("nowPlaying").innerHTML =
+      "🎤 Đang hát: " + title;
   }
 
-  /* Auto Next (demo timer ~180s) */
-  function autoNext() {
-    setTimeout(() => {
-      if (currentIndex < playlist.length - 1) {
-        playSong(currentIndex + 1);
-      }
-    }, 180000);
-  }
-
-  /* Voice Search */
+  // 🎙️ Voice Search
   function voiceSearch() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert("Không hỗ trợ Voice!");
+
+    if (!SpeechRecognition) {
+      alert("Trình duyệt không hỗ trợ Voice Search!");
+      return;
+    }
 
     const recog = new SpeechRecognition();
     recog.lang = "vi-VN";
-    recog.onresult = e => {
-      document.getElementById("query").value = e.results[0][0].transcript;
+
+    recog.onresult = function(e) {
+      const text = e.results[0][0].transcript;
+      document.getElementById("query").value = text;
       search();
     };
+
     recog.start();
-  }
-
-  /* ===== LYRICS ONLINE LRCLib ===== */
-  async function fetchLyricsLRCLib(title) {
-    try {
-      const clean = title.split("|")[0].trim();
-      const url = "https://lrclib.net/api/search?q=" + encodeURIComponent(clean);
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (!data || data.length === 0) return;
-
-      const lrc = data[0].syncedLyrics;
-      if (!lrc) return;
-
-      parseLRC(lrc);
-      startSync();
-    } catch(e){}
-  }
-
-  /* Parse LRC */
-  function parseLRC(lrcText) {
-    lrcLines = lrcText.split("\n").map(line => {
-      const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
-      if (!match) return null;
-      return {
-        time: parseInt(match[1])*60 + parseFloat(match[2]),
-        text: match[3]
-      };
-    }).filter(x=>x);
-  }
-
-  /* Start Karaoke Sync (demo) */
-  function startSync() {
-    let start = Date.now();
-
-    if(syncTimer) clearInterval(syncTimer);
-
-    syncTimer = setInterval(() => {
-      let t = (Date.now() - start)/1000;
-      let line = lrcLines.findLast(l => l.time <= t);
-      if(line) document.getElementById("lyricsBox").innerText = line.text;
-    }, 300);
   }
 </script>
 
