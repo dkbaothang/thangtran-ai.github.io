@@ -11,44 +11,27 @@
       background: black;
       font-family: Arial;
       overflow: hidden;
+      color: white;
     }
 
-    /* QR góc trái */
-    .qr {
-      position: fixed;
-      top: 8px;
-      left: 8px;
-      width: 38px;
-      height: 38px;
-      z-index: 999;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    /* Logo Neon auto scale */
+    /* Logo */
     .logo {
       position: fixed;
       top: 10px;
-      left: 55px;
+      left: 12px;
       font-weight: bold;
-      color: #00ff00;
-      text-shadow: 0 0 6px #00ff00;
+      color: #00ff66;
+      text-shadow: 0 0 8px #00ff66;
       cursor: pointer;
       z-index: 999;
       font-size: clamp(10px, 1.2vw, 14px);
-      white-space: nowrap;
     }
 
-    /* Layout TV */
+    /* Layout */
     .container {
       display: grid;
       grid-template-columns: 3fr 1fr;
       height: 100vh;
-    }
-
-    /* Video */
-    .video {
-      background: black;
     }
 
     iframe {
@@ -62,7 +45,6 @@
       background: #111;
       padding: 12px;
       overflow-y: auto;
-      color: white;
     }
 
     input {
@@ -85,22 +67,11 @@
       font-size: 14px;
     }
 
-    .btn-search {
-      background: red;
-      color: white;
-    }
+    .btn-search { background: red; color: white; }
+    .btn-voice { background: #222; color: cyan; }
+    .btn-tv { background: #00aa00; color: white; }
 
-    .btn-voice {
-      background: #222;
-      color: cyan;
-    }
-
-    .btn-echo {
-      background: #00aa00;
-      color: white;
-    }
-
-    /* Item */
+    /* Playlist item */
     .item {
       display: flex;
       gap: 10px;
@@ -110,7 +81,7 @@
     }
 
     .item img {
-      width: 85px;
+      width: 80px;
       border-radius: 10px;
     }
 
@@ -119,85 +90,34 @@
       font-weight: bold;
     }
 
-    /* Popup QR */
-    .popup {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
+    /* Slider */
+    label {
+      font-size: 13px;
+      color: #00ffcc;
     }
 
-    .popup img {
-      width: 280px;
-      border-radius: 15px;
-      border: 4px solid white;
+    input[type="range"] {
+      width: 100%;
     }
 
     /* Mobile */
     @media (max-width: 768px) {
-      body {
-        overflow: auto;
-      }
-
-      .container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .video {
-        height: 45vh;
-      }
-
-      iframe {
-        height: 45vh;
-      }
-
-      .panel {
-        height: auto;
-        overflow-y: visible;
-      }
-
-      .item img {
-        width: 70px;
-      }
+      body { overflow: auto; }
+      .container { display: flex; flex-direction: column; }
+      iframe { height: 45vh; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- QR -->
-  <img
-    class="qr"
-    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
-    onclick="showQR()"
-  />
+  <div class="logo">THẮNG TRẦN KARAOKE 🎤</div>
 
-  <!-- Logo -->
-  <div class="logo" onclick="goHome()">
-    THẮNG TRẦN KARAOKE 🎤
-  </div>
-
-  <!-- Popup QR -->
-  <div class="popup" id="qrPopup" onclick="hideQR()">
-    <img
-      src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
-    />
-  </div>
-
-  <!-- Main Layout -->
   <div class="container">
 
     <!-- Video -->
-    <div class="video">
-      <iframe
-        id="player"
-        allow="autoplay; encrypted-media"
-        allowfullscreen
-      ></iframe>
+    <div>
+      <iframe id="player" allowfullscreen></iframe>
     </div>
 
     <!-- Panel -->
@@ -205,75 +125,70 @@
 
       <input id="query" placeholder="Nhập bài karaoke..." />
 
-      <button class="btn-search" onclick="search()">
-        🔍 Search Karaoke
-      </button>
+      <button class="btn-search" onclick="search()">🔍 Search</button>
+      <button class="btn-voice" onclick="voiceSearch()">🎙 Voice</button>
 
-      <button class="btn-voice" onclick="voiceSearch()">
-        🎙️ Voice Search
-      </button>
+      <!-- Karaoke TV Mode -->
+      <button class="btn-tv" onclick="tvMode()">📺 Karaoke Live TV Mode</button>
 
-      <!-- ✅ Echo Button -->
-      <button class="btn-echo" onclick="startMicEcho()">
-        🎛️ Bật Echo Micro
-      </button>
+      <!-- Audio Controls -->
+      <button class="btn-tv" onclick="startMic()">🎤 Bật Mic + EchoEQ</button>
 
-      <!-- ✅ Echo Slider -->
-      <label style="font-size:13px;">🌊 Mức vang:</label>
-      <input
-        type="range"
-        min="0"
-        max="0.8"
-        step="0.05"
-        value="0.25"
-        id="echoLevel"
-        oninput="updateEchoLevel()"
-        style="width:100%;"
-      />
+      <label>🌊 Echo</label>
+      <input type="range" min="0" max="0.8" step="0.05" value="0.25"
+        id="echoLevel" oninput="updateAudio()"/>
 
-      <hr style="margin:15px 0; border:1px solid #333;">
+      <label>🎛 Bass</label>
+      <input type="range" min="-10" max="10" step="1" value="5"
+        id="bassLevel" oninput="updateAudio()"/>
+
+      <label>🎚 Treble</label>
+      <input type="range" min="-10" max="10" step="1" value="3"
+        id="trebleLevel" oninput="updateAudio()"/>
+
+      <label>🔊 Auto Volume Mic</label>
+      <input type="range" min="0" max="1" step="0.05" value="0.6"
+        id="micGain" oninput="updateAudio()"/>
+
+      <hr style="border:1px solid #333;">
 
       <div id="results"></div>
-    </div>
 
+    </div>
   </div>
 
 <script>
   const WORKER =
     "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
 
-  /* Search */
+  /* Search Karaoke */
   async function search() {
     const q = document.getElementById("query").value;
     const box = document.getElementById("results");
 
-    box.innerHTML = "⏳ Đang tìm karaoke...";
+    box.innerHTML = "⏳ Đang tìm...";
 
     const res = await fetch(WORKER + encodeURIComponent(q));
     const data = await res.json();
 
     box.innerHTML = "";
 
-    data.items.forEach((v) => {
+    data.items.forEach(v => {
       const id = v.id.videoId;
       const title = v.snippet.title;
       const thumb = v.snippet.thumbnails.medium.url;
 
       const div = document.createElement("div");
       div.className = "item";
-
       div.innerHTML = `
         <img src="${thumb}">
         <div class="title">${title}</div>
       `;
-
       div.onclick = () => playVideo(id);
-
       box.appendChild(div);
     });
   }
 
-  /* Play Video */
   function playVideo(id) {
     document.getElementById("player").src =
       "https://www.youtube.com/embed/" +
@@ -285,83 +200,86 @@
   function voiceSearch() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("❌ Thiết bị không hỗ trợ Voice Search!");
-      return;
-    }
+    if (!SpeechRecognition) return alert("❌ Không hỗ trợ Voice!");
 
     const recog = new SpeechRecognition();
     recog.lang = "vi-VN";
-
-    recog.onresult = function (e) {
-      const text = e.results[0][0].transcript;
-      document.getElementById("query").value = text;
+    recog.onresult = e => {
+      document.getElementById("query").value =
+        e.results[0][0].transcript;
       search();
     };
-
     recog.start();
   }
 
-  /* QR Popup */
-  function showQR() {
-    document.getElementById("qrPopup").style.display = "flex";
+  /* Karaoke Live TV Mode */
+  function tvMode() {
+    document.documentElement.requestFullscreen();
   }
 
-  function hideQR() {
-    document.getElementById("qrPopup").style.display = "none";
+  /* 🎤 Audio Engine Echo + EQ */
+  let audioCtx, micSource;
+  let delayNode, feedbackGain;
+  let bassEQ, trebleEQ;
+  let micGainNode;
+
+  async function startMic() {
+    if (audioCtx) return alert("Mic đã bật rồi!");
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    micSource = audioCtx.createMediaStreamSource(stream);
+
+    /* Auto Volume */
+    micGainNode = audioCtx.createGain();
+    micGainNode.gain.value = 0.6;
+
+    /* Bass EQ */
+    bassEQ = audioCtx.createBiquadFilter();
+    bassEQ.type = "lowshelf";
+    bassEQ.frequency.value = 200;
+
+    /* Treble EQ */
+    trebleEQ = audioCtx.createBiquadFilter();
+    trebleEQ.type = "highshelf";
+    trebleEQ.frequency.value = 3000;
+
+    /* Echo */
+    delayNode = audioCtx.createDelay();
+    delayNode.delayTime.value = 0.25;
+
+    feedbackGain = audioCtx.createGain();
+    feedbackGain.gain.value = 0.25;
+
+    delayNode.connect(feedbackGain);
+    feedbackGain.connect(delayNode);
+
+    /* Chain */
+    micSource
+      .connect(micGainNode)
+      .connect(bassEQ)
+      .connect(trebleEQ)
+      .connect(delayNode)
+      .connect(audioCtx.destination);
+
+    alert("✅ Mic + EchoEQ đã bật!");
   }
 
-  function goHome() {
-    window.location.href =
-      "https://dkbaothang.github.io/thangtran-ai.github.io/";
-  }
+  function updateAudio() {
+    if (!audioCtx) return;
 
-  /* ========================= */
-  /* 🎛️ Echo Micro System */
-  /* ========================= */
+    feedbackGain.gain.value =
+      document.getElementById("echoLevel").value;
 
-  let audioCtx;
-  let delayNode;
-  let feedbackNode;
-  let micSource;
+    bassEQ.gain.value =
+      document.getElementById("bassLevel").value;
 
-  async function startMicEcho() {
-    try {
-      if (audioCtx) {
-        alert("Echo đã bật rồi 🎤");
-        return;
-      }
+    trebleEQ.gain.value =
+      document.getElementById("trebleLevel").value;
 
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      micSource = audioCtx.createMediaStreamSource(stream);
-
-      delayNode = audioCtx.createDelay();
-      delayNode.delayTime.value = 0.25;
-
-      feedbackNode = audioCtx.createGain();
-      feedbackNode.gain.value =
-        document.getElementById("echoLevel").value;
-
-      delayNode.connect(feedbackNode);
-      feedbackNode.connect(delayNode);
-
-      micSource.connect(delayNode);
-      delayNode.connect(audioCtx.destination);
-
-      alert("✅ Echo Micro đã bật!");
-    } catch (err) {
-      alert("❌ Không bật được Micro: " + err);
-    }
-  }
-
-  function updateEchoLevel() {
-    if (feedbackNode) {
-      feedbackNode.gain.value =
-        document.getElementById("echoLevel").value;
-    }
+    micGainNode.gain.value =
+      document.getElementById("micGain").value;
   }
 </script>
 
