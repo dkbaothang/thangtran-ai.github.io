@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>THẮNG TRẦN KARAOKE</title>
 
   <style>
@@ -12,37 +13,38 @@
       overflow: hidden;
     }
 
-    /* 🎤 Logo góc trái */
-    .logo {
-      position: absolute;
+    /* QR góc trái */
+    .qr {
+      position: fixed;
       top: 10px;
+      left: 10px;
+      width: 42px;
+      height: 42px;
+      z-index: 999;
+      cursor: pointer;
+    }
+
+    /* Logo Kekara */
+    .logo {
+      position: fixed;
+      top: 14px;
       left: 60px;
       font-size: 14px;
       font-weight: bold;
       color: cyan;
-      z-index: 99;
+      z-index: 999;
       cursor: pointer;
+      text-shadow: 0 0 8px cyan;
     }
 
-    /* ✅ QR góc trái */
-    .qr {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 40px;
-      height: 40px;
-      z-index: 99;
-      cursor: pointer;
-    }
-
-    /* Layout Kekara */
+    /* Layout TV mặc định */
     .container {
       display: grid;
       grid-template-columns: 3fr 1fr;
       height: 100vh;
     }
 
-    /* Video full */
+    /* Video */
     .video {
       background: black;
     }
@@ -53,34 +55,45 @@
       border: none;
     }
 
-    /* Playlist panel */
+    /* Panel Playlist */
     .panel {
       background: #111;
-      padding: 10px;
+      padding: 12px;
       overflow-y: auto;
       color: white;
     }
 
     input {
       width: 95%;
-      padding: 10px;
+      padding: 12px;
       border-radius: 20px;
       border: none;
       margin-bottom: 10px;
+      font-size: 15px;
     }
 
     button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border-radius: 20px;
       border: none;
-      background: red;
-      color: white;
       font-weight: bold;
       cursor: pointer;
       margin-bottom: 10px;
+      font-size: 15px;
     }
 
+    .btn-search {
+      background: red;
+      color: white;
+    }
+
+    .btn-voice {
+      background: #222;
+      color: cyan;
+    }
+
+    /* Item playlist */
     .item {
       display: flex;
       gap: 10px;
@@ -104,23 +117,59 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       justify-content: center;
       align-items: center;
-      z-index: 200;
+      z-index: 2000;
     }
 
     .popup img {
-      width: 250px;
-      border: 5px solid white;
+      width: 280px;
       border-radius: 15px;
+      border: 4px solid white;
+    }
+
+    /* ============================= */
+    /* 📱 MOBILE MODE (Responsive) */
+    /* ============================= */
+    @media (max-width: 768px) {
+
+      body {
+        overflow: auto;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .video {
+        height: 45vh;
+      }
+
+      iframe {
+        height: 45vh;
+      }
+
+      .panel {
+        height: auto;
+        overflow-y: visible;
+      }
+
+      .item img {
+        width: 75px;
+      }
+
+      .logo {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- QR góc trái -->
+  <!-- QR -->
   <img
     class="qr"
     src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
@@ -128,18 +177,19 @@
   />
 
   <!-- Logo -->
-  <div class="logo" onclick="goHome()">🎤 THẮNG TRẦN KARAOKE</div>
+  <div class="logo" onclick="goHome()">THẮNG TRẦN KARAOKE</div>
 
   <!-- Popup QR -->
   <div class="popup" id="qrPopup" onclick="hideQR()">
     <img
-      src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
+      src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
     />
   </div>
 
+  <!-- Main Layout -->
   <div class="container">
 
-    <!-- VIDEO FULL -->
+    <!-- Video -->
     <div class="video">
       <iframe
         id="player"
@@ -148,14 +198,15 @@
       ></iframe>
     </div>
 
-    <!-- PLAYLIST -->
+    <!-- Playlist Panel -->
     <div class="panel">
       <input id="query" placeholder="Nhập bài karaoke..." />
 
-      <button onclick="search()">🔍 Search Karaoke</button>
+      <button class="btn-search" onclick="search()">
+        🔍 Search Karaoke
+      </button>
 
-      <!-- ✅ Voice Search -->
-      <button onclick="voiceSearch()" style="background:#222;color:cyan;">
+      <button class="btn-voice" onclick="voiceSearch()">
         🎙️ Voice Search
       </button>
 
@@ -168,11 +219,12 @@
   const WORKER =
     "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
 
+  /* Search */
   async function search() {
     const q = document.getElementById("query").value;
     const box = document.getElementById("results");
 
-    box.innerHTML = "⏳ Đang tìm video embeddable...";
+    box.innerHTML = "⏳ Đang tìm video karaoke...";
 
     const res = await fetch(WORKER + encodeURIComponent(q));
     const data = await res.json();
@@ -198,7 +250,7 @@
     });
   }
 
-  /* ✅ Player chuẩn TV */
+  /* Player chuẩn TV */
   function playVideo(id) {
     document.getElementById("player").src =
       "https://www.youtube.com/embed/" +
@@ -210,6 +262,7 @@
   function showQR() {
     document.getElementById("qrPopup").style.display = "flex";
   }
+
   function hideQR() {
     document.getElementById("qrPopup").style.display = "none";
   }
@@ -219,13 +272,13 @@
       "https://dkbaothang.github.io/thangtran-ai.github.io/";
   }
 
-  /* 🎙️ Voice Search chuẩn Kekara */
+  /* Voice Search */
   function voiceSearch() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("❌ TV/Trình duyệt này không hỗ trợ Voice Search!");
+      alert("❌ Thiết bị không hỗ trợ Voice Search!");
       return;
     }
 
@@ -247,222 +300,4 @@
 </script>
 
 </body>
-</html><!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <title>THẮNG TRẦN KARAOKE</title>
-
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      font-family: Arial;
-      overflow: hidden;
-    }
-
-    /* 🎤 Logo góc trái */
-    .logo {
-      position: absolute;
-      top: 10px;
-      left: 60px;
-      font-size: 14px;
-      font-weight: bold;
-      color: cyan;
-      z-index: 99;
-      cursor: pointer;
-    }
-
-    /* ✅ QR góc trái */
-    .qr {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 40px;
-      height: 40px;
-      z-index: 99;
-      cursor: pointer;
-    }
-
-    /* Layout Kekara */
-    .container {
-      display: grid;
-      grid-template-columns: 3fr 1fr;
-      height: 100vh;
-    }
-
-    /* Video full */
-    .video {
-      background: black;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* Playlist panel */
-    .panel {
-      background: #111;
-      padding: 10px;
-      overflow-y: auto;
-      color: white;
-    }
-
-    input {
-      width: 95%;
-      padding: 10px;
-      border-radius: 20px;
-      border: none;
-      margin-bottom: 10px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      border-radius: 20px;
-      border: none;
-      background: red;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-
-    .item {
-      display: flex;
-      gap: 10px;
-      padding: 8px;
-      cursor: pointer;
-      border-bottom: 1px solid #333;
-    }
-
-    .item img {
-      width: 90px;
-      border-radius: 10px;
-    }
-
-    .title {
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    /* Popup QR */
-    .popup {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-      z-index: 200;
-    }
-
-    .popup img {
-      width: 250px;
-      border: 5px solid white;
-      border-radius: 15px;
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- QR góc trái -->
-  <img
-    class="qr"
-    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
-    onclick="showQR()"
-  />
-
-  <!-- Logo -->
-  <div class="logo" onclick="goHome()">🎤 THẮNG TRẦN KARAOKE</div>
-
-  <!-- Popup QR -->
-  <div class="popup" id="qrPopup" onclick="hideQR()">
-    <img
-      src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
-    />
-  </div>
-
-  <div class="container">
-
-    <!-- VIDEO FULL -->
-    <div class="video">
-      <iframe
-        id="player"
-        allow="autoplay; encrypted-media"
-        allowfullscreen
-      ></iframe>
-    </div>
-
-    <!-- PLAYLIST -->
-    <div class="panel">
-      <input id="query" placeholder="Nhập bài karaoke..." />
-      <button onclick="search()">🔍 Search Karaoke</button>
-
-      <div id="results"></div>
-    </div>
-
-  </div>
-
-<script>
-  const WORKER =
-    "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
-
-  async function search() {
-    const q = document.getElementById("query").value;
-    const box = document.getElementById("results");
-
-    box.innerHTML = "⏳ Đang tìm video embeddable...";
-
-    const res = await fetch(WORKER + encodeURIComponent(q));
-    const data = await res.json();
-
-    box.innerHTML = "";
-
-    data.items.forEach((v) => {
-      const id = v.id.videoId;
-      const title = v.snippet.title;
-      const thumb = v.snippet.thumbnails.medium.url;
-
-      const div = document.createElement("div");
-      div.className = "item";
-
-      div.innerHTML = `
-        <img src="${thumb}">
-        <div class="title">${title}</div>
-      `;
-
-      div.onclick = () => playVideo(id);
-
-      box.appendChild(div);
-    });
-  }
-
-  /* ✅ Player chuẩn TV */
-  function playVideo(id) {
-    document.getElementById("player").src =
-      "https://www.youtube.com/embed/" +
-      id +
-      "?autoplay=1&mute=1&playsinline=1";
-  }
-
-  /* QR Popup */
-  function showQR() {
-    document.getElementById("qrPopup").style.display = "flex";
-  }
-  function hideQR() {
-    document.getElementById("qrPopup").style.display = "none";
-  }
-
-  function goHome() {
-    window.location.href =
-      "https://dkbaothang.github.io/thangtran-ai.github.io/";
-  }
-</script>
-
-</body>
 </html>
-
