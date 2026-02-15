@@ -13,7 +13,7 @@
       overflow: hidden;
     }
 
-    /* ✅ QR góc trái */
+    /* QR góc trái */
     .qr {
       position: fixed;
       top: 8px;
@@ -25,7 +25,7 @@
       border-radius: 4px;
     }
 
-    /* ✅ Logo co giãn giống Kekara */
+    /* Logo Neon auto scale */
     .logo {
       position: fixed;
       top: 10px;
@@ -35,8 +35,6 @@
       text-shadow: 0 0 6px #00ff00;
       cursor: pointer;
       z-index: 999;
-
-      /* Auto Scale Font */
       font-size: clamp(10px, 1.2vw, 14px);
       white-space: nowrap;
     }
@@ -59,7 +57,7 @@
       border: none;
     }
 
-    /* Playlist Panel */
+    /* Panel */
     .panel {
       background: #111;
       padding: 12px;
@@ -97,7 +95,12 @@
       color: cyan;
     }
 
-    /* Item playlist */
+    .btn-echo {
+      background: #00aa00;
+      color: white;
+    }
+
+    /* Item */
     .item {
       display: flex;
       gap: 10px;
@@ -133,7 +136,7 @@
       border: 4px solid white;
     }
 
-    /* 📱 MOBILE MODE */
+    /* Mobile */
     @media (max-width: 768px) {
       body {
         overflow: auto;
@@ -197,8 +200,9 @@
       ></iframe>
     </div>
 
-    <!-- Playlist Panel -->
+    <!-- Panel -->
     <div class="panel">
+
       <input id="query" placeholder="Nhập bài karaoke..." />
 
       <button class="btn-search" onclick="search()">
@@ -209,6 +213,26 @@
         🎙️ Voice Search
       </button>
 
+      <!-- ✅ Echo Button -->
+      <button class="btn-echo" onclick="startMicEcho()">
+        🎛️ Bật Echo Micro
+      </button>
+
+      <!-- ✅ Echo Slider -->
+      <label style="font-size:13px;">🌊 Mức vang:</label>
+      <input
+        type="range"
+        min="0"
+        max="0.8"
+        step="0.05"
+        value="0.25"
+        id="echoLevel"
+        oninput="updateEchoLevel()"
+        style="width:100%;"
+      />
+
+      <hr style="margin:15px 0; border:1px solid #333;">
+
       <div id="results"></div>
     </div>
 
@@ -218,11 +242,12 @@
   const WORKER =
     "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
 
+  /* Search */
   async function search() {
     const q = document.getElementById("query").value;
     const box = document.getElementById("results");
 
-    box.innerHTML = "⏳ Đang tìm video karaoke...";
+    box.innerHTML = "⏳ Đang tìm karaoke...";
 
     const res = await fetch(WORKER + encodeURIComponent(q));
     const data = await res.json();
@@ -248,6 +273,7 @@
     });
   }
 
+  /* Play Video */
   function playVideo(id) {
     document.getElementById("player").src =
       "https://www.youtube.com/embed/" +
@@ -255,19 +281,7 @@
       "?autoplay=1&mute=1&playsinline=1";
   }
 
-  function showQR() {
-    document.getElementById("qrPopup").style.display = "flex";
-  }
-
-  function hideQR() {
-    document.getElementById("qrPopup").style.display = "none";
-  }
-
-  function goHome() {
-    window.location.href =
-      "https://dkbaothang.github.io/thangtran-ai.github.io/";
-  }
-
+  /* Voice Search */
   function voiceSearch() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -287,6 +301,67 @@
     };
 
     recog.start();
+  }
+
+  /* QR Popup */
+  function showQR() {
+    document.getElementById("qrPopup").style.display = "flex";
+  }
+
+  function hideQR() {
+    document.getElementById("qrPopup").style.display = "none";
+  }
+
+  function goHome() {
+    window.location.href =
+      "https://dkbaothang.github.io/thangtran-ai.github.io/";
+  }
+
+  /* ========================= */
+  /* 🎛️ Echo Micro System */
+  /* ========================= */
+
+  let audioCtx;
+  let delayNode;
+  let feedbackNode;
+  let micSource;
+
+  async function startMicEcho() {
+    try {
+      if (audioCtx) {
+        alert("Echo đã bật rồi 🎤");
+        return;
+      }
+
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micSource = audioCtx.createMediaStreamSource(stream);
+
+      delayNode = audioCtx.createDelay();
+      delayNode.delayTime.value = 0.25;
+
+      feedbackNode = audioCtx.createGain();
+      feedbackNode.gain.value =
+        document.getElementById("echoLevel").value;
+
+      delayNode.connect(feedbackNode);
+      feedbackNode.connect(delayNode);
+
+      micSource.connect(delayNode);
+      delayNode.connect(audioCtx.destination);
+
+      alert("✅ Echo Micro đã bật!");
+    } catch (err) {
+      alert("❌ Không bật được Micro: " + err);
+    }
+  }
+
+  function updateEchoLevel() {
+    if (feedbackNode) {
+      feedbackNode.gain.value =
+        document.getElementById("echoLevel").value;
+    }
   }
 </script>
 
