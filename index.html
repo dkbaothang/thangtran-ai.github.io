@@ -14,20 +14,38 @@
       color: white;
     }
 
-    /* Logo */
-    .logo {
+    /* ===== TOP LEFT QR + LOGO ===== */
+    .topbar {
       position: fixed;
       top: 10px;
-      left: 12px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 9999;
+    }
+
+    /* QR nhỏ góc trái */
+    .qr-mini {
+      width: 42px;
+      height: 42px;
+      border: 2px solid cyan;
+      border-radius: 6px;
+      cursor: pointer;
+      background: white;
+    }
+
+    /* Logo chữ */
+    .logo-text {
       font-weight: bold;
       color: #00ff66;
       text-shadow: 0 0 8px #00ff66;
       cursor: pointer;
-      z-index: 999;
       font-size: clamp(10px, 1.2vw, 14px);
+      white-space: nowrap;
     }
 
-    /* Layout */
+    /* ===== Layout ===== */
     .container {
       display: grid;
       grid-template-columns: 3fr 1fr;
@@ -38,6 +56,7 @@
       width: 100%;
       height: 100%;
       border: none;
+      background: black;
     }
 
     /* Panel */
@@ -100,62 +119,115 @@
       width: 100%;
     }
 
+    /* ===== QR Popup Fullscreen ===== */
+    .qr-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+    }
+
+    .qr-popup img {
+      width: 240px;
+      border-radius: 12px;
+      border: 4px solid cyan;
+      background: white;
+    }
+
+    .qr-popup p {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 16px;
+      color: cyan;
+    }
+
     /* Mobile */
     @media (max-width: 768px) {
       body { overflow: auto; }
       .container { display: flex; flex-direction: column; }
       iframe { height: 45vh; }
+
+      .qr-mini {
+        width: 34px;
+        height: 34px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="logo">THẮNG TRẦN KARAOKE 🎤</div>
+<!-- ✅ TOP LEFT QR + LOGO -->
+<div class="topbar">
+  <!-- QR -->
+  <img
+    class="qr-mini"
+    src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
+    onclick="openQR()"
+  />
 
-  <div class="container">
-
-    <!-- Video -->
-    <div>
-      <iframe id="player" allowfullscreen></iframe>
-    </div>
-
-    <!-- Panel -->
-    <div class="panel">
-
-      <input id="query" placeholder="Nhập bài karaoke..." />
-
-      <button class="btn-search" onclick="search()">🔍 Search</button>
-      <button class="btn-voice" onclick="voiceSearch()">🎙 Voice</button>
-
-      <!-- Karaoke TV Mode -->
-      <button class="btn-tv" onclick="tvMode()">📺 Karaoke Live TV Mode</button>
-
-      <!-- Audio Controls -->
-      <button class="btn-tv" onclick="startMic()">🎤 Bật Mic + EchoEQ</button>
-
-      <label>🌊 Echo</label>
-      <input type="range" min="0" max="0.8" step="0.05" value="0.25"
-        id="echoLevel" oninput="updateAudio()"/>
-
-      <label>🎛 Bass</label>
-      <input type="range" min="-10" max="10" step="1" value="5"
-        id="bassLevel" oninput="updateAudio()"/>
-
-      <label>🎚 Treble</label>
-      <input type="range" min="-10" max="10" step="1" value="3"
-        id="trebleLevel" oninput="updateAudio()"/>
-
-      <label>🔊 Auto Volume Mic</label>
-      <input type="range" min="0" max="1" step="0.05" value="0.6"
-        id="micGain" oninput="updateAudio()"/>
-
-      <hr style="border:1px solid #333;">
-
-      <div id="results"></div>
-
-    </div>
+  <!-- Logo -->
+  <div class="logo-text"
+    onclick="window.open('https://dkbaothang.github.io/thangtran-ai.github.io/','_blank')">
+    THẮNG TRẦN KARAOKE 🎤
   </div>
+</div>
+
+<!-- QR POPUP -->
+<div class="qr-popup" id="qrPopup" onclick="closeQR()">
+  <div>
+    <img
+      src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://dkbaothang.github.io/thangtran-ai.github.io/"
+    />
+    <p>📌 Quét QR để hát ngay trên điện thoại</p>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="container">
+
+  <!-- Video -->
+  <div>
+    <iframe id="player" allowfullscreen></iframe>
+  </div>
+
+  <!-- Panel -->
+  <div class="panel">
+
+    <input id="query" placeholder="Nhập bài karaoke..." />
+
+    <button class="btn-search" onclick="search()">🔍 Search</button>
+    <button class="btn-voice" onclick="voiceSearch()">🎙 Voice</button>
+
+    <button class="btn-tv" onclick="tvMode()">📺 Karaoke Live TV Mode</button>
+
+    <button class="btn-tv" onclick="startMic()">🎤 Bật Mic + EchoEQ</button>
+
+    <label>🌊 Echo</label>
+    <input type="range" min="0" max="0.8" step="0.05" value="0.25"
+      id="echoLevel" oninput="updateAudio()"/>
+
+    <label>🎛 Bass</label>
+    <input type="range" min="-10" max="10" step="1" value="5"
+      id="bassLevel" oninput="updateAudio()"/>
+
+    <label>🎚 Treble</label>
+    <input type="range" min="-10" max="10" step="1" value="3"
+      id="trebleLevel" oninput="updateAudio()"/>
+
+    <label>🔊 Auto Volume Mic</label>
+    <input type="range" min="0" max="1" step="0.05" value="0.6"
+      id="micGain" oninput="updateAudio()"/>
+
+    <hr style="border:1px solid #333;">
+
+    <div id="results"></div>
+
+  </div>
+</div>
 
 <script>
   const WORKER =
@@ -217,6 +289,14 @@
     document.documentElement.requestFullscreen();
   }
 
+  /* QR Popup */
+  function openQR() {
+    document.getElementById("qrPopup").style.display = "flex";
+  }
+  function closeQR() {
+    document.getElementById("qrPopup").style.display = "none";
+  }
+
   /* 🎤 Audio Engine Echo + EQ */
   let audioCtx, micSource;
   let delayNode, feedbackGain;
@@ -231,21 +311,17 @@
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     micSource = audioCtx.createMediaStreamSource(stream);
 
-    /* Auto Volume */
     micGainNode = audioCtx.createGain();
     micGainNode.gain.value = 0.6;
 
-    /* Bass EQ */
     bassEQ = audioCtx.createBiquadFilter();
     bassEQ.type = "lowshelf";
     bassEQ.frequency.value = 200;
 
-    /* Treble EQ */
     trebleEQ = audioCtx.createBiquadFilter();
     trebleEQ.type = "highshelf";
     trebleEQ.frequency.value = 3000;
 
-    /* Echo */
     delayNode = audioCtx.createDelay();
     delayNode.delayTime.value = 0.25;
 
@@ -255,7 +331,6 @@
     delayNode.connect(feedbackGain);
     feedbackGain.connect(delayNode);
 
-    /* Chain */
     micSource
       .connect(micGainNode)
       .connect(bassEQ)
