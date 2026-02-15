@@ -13,31 +13,35 @@
       overflow: hidden;
     }
 
-    /* QR góc trái */
+    /* ✅ QR góc trái */
     .qr {
       position: fixed;
-      top: 10px;
-      left: 10px;
-      width: 42px;
-      height: 42px;
+      top: 8px;
+      left: 8px;
+      width: 38px;
+      height: 38px;
       z-index: 999;
       cursor: pointer;
+      border-radius: 4px;
     }
 
-    /* Logo Kekara */
+    /* ✅ Logo co giãn giống Kekara */
     .logo {
       position: fixed;
-      top: 14px;
-      left: 60px;
-      font-size: 14px;
+      top: 10px;
+      left: 55px;
       font-weight: bold;
-      color: cyan;
-      z-index: 999;
+      color: #00ff00;
+      text-shadow: 0 0 6px #00ff00;
       cursor: pointer;
-      text-shadow: 0 0 8px cyan;
+      z-index: 999;
+
+      /* Auto Scale Font */
+      font-size: clamp(10px, 1.2vw, 14px);
+      white-space: nowrap;
     }
 
-    /* Layout TV mặc định */
+    /* Layout TV */
     .container {
       display: grid;
       grid-template-columns: 3fr 1fr;
@@ -55,7 +59,7 @@
       border: none;
     }
 
-    /* Panel Playlist */
+    /* Playlist Panel */
     .panel {
       background: #111;
       padding: 12px;
@@ -65,22 +69,22 @@
 
     input {
       width: 95%;
-      padding: 12px;
-      border-radius: 20px;
+      padding: 10px;
+      border-radius: 18px;
       border: none;
       margin-bottom: 10px;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     button {
       width: 100%;
-      padding: 12px;
-      border-radius: 20px;
+      padding: 10px;
+      border-radius: 18px;
       border: none;
       font-weight: bold;
       cursor: pointer;
       margin-bottom: 10px;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .btn-search {
@@ -103,7 +107,7 @@
     }
 
     .item img {
-      width: 90px;
+      width: 85px;
       border-radius: 10px;
     }
 
@@ -129,11 +133,8 @@
       border: 4px solid white;
     }
 
-    /* ============================= */
-    /* 📱 MOBILE MODE (Responsive) */
-    /* ============================= */
+    /* 📱 MOBILE MODE */
     @media (max-width: 768px) {
-
       body {
         overflow: auto;
       }
@@ -157,11 +158,7 @@
       }
 
       .item img {
-        width: 75px;
-      }
-
-      .logo {
-        font-size: 13px;
+        width: 70px;
       }
     }
   </style>
@@ -177,7 +174,9 @@
   />
 
   <!-- Logo -->
-  <div class="logo" onclick="goHome()">THẮNG TRẦN KARAOKE</div>
+  <div class="logo" onclick="goHome()">
+    THẮNG TRẦN KARAOKE 🎤
+  </div>
 
   <!-- Popup QR -->
   <div class="popup" id="qrPopup" onclick="hideQR()">
@@ -219,7 +218,6 @@
   const WORKER =
     "https://thang-tran-karaoke-ai.thangtran.workers.dev/search?q=";
 
-  /* Search */
   async function search() {
     const q = document.getElementById("query").value;
     const box = document.getElementById("results");
@@ -250,7 +248,6 @@
     });
   }
 
-  /* Player chuẩn TV */
   function playVideo(id) {
     document.getElementById("player").src =
       "https://www.youtube.com/embed/" +
@@ -258,7 +255,6 @@
       "?autoplay=1&mute=1&playsinline=1";
   }
 
-  /* QR Popup */
   function showQR() {
     document.getElementById("qrPopup").style.display = "flex";
   }
@@ -272,7 +268,6 @@
       "https://dkbaothang.github.io/thangtran-ai.github.io/";
   }
 
-  /* Voice Search */
   function voiceSearch() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -284,10 +279,6 @@
 
     const recog = new SpeechRecognition();
     recog.lang = "vi-VN";
-
-    recog.onstart = () => {
-      document.getElementById("query").value = "🎤 Đang nghe...";
-    };
 
     recog.onresult = function (e) {
       const text = e.results[0][0].transcript;
